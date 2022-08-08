@@ -1,3 +1,11 @@
+# Minesweeper
+I want to build an app that users can use to play minesweeper.  
+I want to have a hover-over feature for cleared cells that shows the odds for each surrounding, uncleared cell of that cell being a mine, and why.
+I want to have a hover-over feature for uncleared cells that shows the odds of that cell being a mine, and why.
+I want to have an auto-solve feature.
+
+
+I'm just leaving the default readme material here at the bottom.
 # Getting Started with Create React App and Redux
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
