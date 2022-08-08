@@ -1,12 +1,12 @@
 import React from 'react';
 import './App.css';
 
+import Minefield from './features/minefield/Minefield'
+
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        
-      </header>
+      <Minefield />
     </div>
   );
 }

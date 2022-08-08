@@ -1,0 +1,7 @@
+.gameGrid{
+    display: flex;
+    flex-direction: column;
+}
+.minefieldRow{
+    display: flex;
+}
