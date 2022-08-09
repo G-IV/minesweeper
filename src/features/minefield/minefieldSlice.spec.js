@@ -13,8 +13,7 @@ describe('minefield reducer', () => {
     });
     it('should handle generate minefield', () => {
         const actual = minefieldReducer(initialState, generateMineField());
-        let flattenedField = [].concat(...actual.minefield)
-        const mineCount = flattenedField.flat().filter((cell) => cell.val === 1).length
+        const mineCount = [].concat(...actual.minefield).flat().filter((cell) => cell.val === 1).length
         expect(mineCount).toEqual(99)
     })
 })
