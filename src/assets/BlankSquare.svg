@@ -1,0 +1,21 @@
+<svg width="16mm" height="16.009mm" version="1.1" viewBox="0 0 16 16.009" xmlns="http://www.w3.org/2000/svg">
+ <g transform="translate(-25.449 -39.33)">
+  <g stroke-width=".2645">
+   <rect x="25.449" y="39.33" width="16" height="15.991" fill="#bdbdbd"/>
+   <rect x="25.449" y="39.33" width="2" height="15.991" fill="#fff"/>
+   <rect x="39.449" y="39.339" width="2" height="15.991" fill="#868686"/>
+   <path d="m25.449 39.33v1.9987h14l1.9999-1.9889v-0.0098z" fill="#fff"/>
+   <path d="m27.449 53.322-1.9999 1.9987h16v-1.9987z" fill="#868686"/>
+  </g>
+  <g fill="#fff">
+   <g stroke-width=".2645">
+    <path d="m27.456 55.318 0.0096-1.9511"/>
+    <path d="m27.462 53.3-0.0032 2.0181"/>
+    <path d="m25.449 55.321 2.0001-1.9988"/>
+    <path d="m25.449 53.322 1.16e-4 1.9987"/>
+   </g>
+   <path class="UnoptimicedTransforms" d="m0 0"/>
+   <path class="UnoptimicedTransforms" d="m0 0"/>
+  </g>
+ </g>
+</svg>
