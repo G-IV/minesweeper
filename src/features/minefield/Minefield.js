@@ -5,7 +5,7 @@ import Cell from "../cell/Cell";
 
 // Styling
 import minefieldStyles from './Minefield.module.css';
-import { selectMineField, generateMineField } from './minefieldSlice';
+import { selectMineField, generateMineField } from './minefieldSlice.js';
 
 export default function Minefield(){
     const dispatch = useDispatch();
@@ -24,7 +24,6 @@ export default function Minefield(){
                         <div className={`${minefieldStyles.minefieldRow}`} key={`row_${row[0].row}`}>
                             {row.map((pavlov) => (
                                 <div className={`pavlov`} key={`${pavlov.id}`}><Cell props={pavlov}/></div>
-                                // <div className={`pavlov`} key={`${pavlov.id}`}>{pavlov.val}</div>
                             ))}
                         </div>
                     ))
