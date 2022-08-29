@@ -7,32 +7,40 @@ import { ReactComponent as FlagSquare } from '../../assets/FlagSquare.svg'
 
 import cellStyles from './Cell.module.css'
 
-import { selectMineField, updateMinefield } from "../minefield/minefieldSlice";
+import { 
+    selectMineField,
+    updateAdjacentCells,
+    updateCell
+} from "../minefield/minefieldSlice";
+import { 
+    selectRow, 
+    selectCol, 
+    selectAdjacentMineCount, 
+    selectHasMine, 
+    initCell
+} from "./cellSlice";
 
 export default function Cell({props}){
     let dispatch = useDispatch()
 
     let minefield = useSelector(selectMineField)
-    
-    const getOffset = (index) => {
-        var row = props.row + ([0,1,2].includes(index) ? -1 : [3,4].includes(index) ? 0 : 1)
-        var col = props.col + ([0,3,5].includes(index) ? -1 : [1,6].includes(index) ? 0 : 1)
-        return {row, col} 
-    }
-
-    const getOffsetValue = (offset) => {
-        if (offset.row > -1 && offset.row < minefield.length && offset.col > -1 && offset.col < minefield[0].length) {
-            return minefield[offset.row][offset.col].val
-        }
-        return null
-    }
+    let row = useSelector(selectRow)
+    let col = useSelector(selectCol)
+    let adjacentMineCount = useSelector(selectAdjacentMineCount)
+    let hasMine = useSelector(selectHasMine)
 
     useEffect(() => {
-        const touching = Array(8).fill().map((elem, index) => {
-            const offset = getOffset(index)
-            const val = getOffsetValue(offset)
-            return {row: offset.row, col: offset.col, val}
-        }).filter((adjField) => adjField.val !== null)
+        dispatch(updateAdjacentCells(props))
+        dispatch(updateCell({
+            row: props.row, 
+            col: props.col, 
+            updates:[{key: 'isCleared', val: false}, {key: 'isFlagged', val: false}]
+        }))
+        dispatch(initCell({
+            row: props.row, col: props.col,
+            hasMine: minefield[props.row][props.col].hasMine,
+            adjacentMineCount: minefield[props.row][props.col].adjacentCells.length
+        }))
     }, [])
 
     return (

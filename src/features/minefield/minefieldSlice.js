@@ -12,15 +12,24 @@ export const minefieldSlice = createSlice({
             state.minefield = action.payload
         },
         generateMineField: (state, action) => {
-            state.minefield = generateMines()
+            state.minefield = generateMines(action.payload)
         },
         updateCell: (state, action) => {
             state.minefield = cellUpdater(action.payload, [...state.minefield])
+        },
+        updateAdjacentCells: (state, action) => {
+            const adjacent = adjacentCells(action.payload, [...state.minefield])
+            const cell = {
+                row: action.payload.row, 
+                col: action.payload.col,
+                updates: [{key: 'adjacentCells', val: adjacent}]
+            }
+            state.minefield = cellUpdater(cell, [...state.minefield])
         }
     }
 })
 
-export const { updateMinefield, generateMineField, updateCell } = minefieldSlice.actions
+export const { updateMinefield, generateMineField, updateCell, updateAdjacentCells } = minefieldSlice.actions
 
 export const selectMineField = (state) => state.minefield.minefield
 
@@ -31,22 +40,27 @@ export const generateMines = (mineFieldOptions={count: 99, rows: 16, columns: 30
         Intermediate: 16x14 40
         Expert 16x30 99
     */
-        let newMinefield = Array(mineFieldOptions.rows).fill().map(() => Array(mineFieldOptions.columns).fill(0));
+        // validate args, use defaults if any are missing
+        const argList = Object.keys(mineFieldOptions)
+        const rowCount = mineFieldOptions.rows
+        const columnCount = mineFieldOptions.columns
+        const mineCount = mineFieldOptions.count > rowCount * columnCount ? rowCount * columnCount * .2 : mineFieldOptions.count
+        let newMinefield = Array(rowCount).fill().map(() => Array(columnCount).fill(false));
         let indexList = []
-        for (var i = 0; i < mineFieldOptions.rows * mineFieldOptions.columns; i++){
+        for (var i = 0; i < rowCount * columnCount; i++){
             indexList.push(i)
         }
-        for (var j = 0; j < mineFieldOptions.count; j++){
+        for (var j = 0; j < mineCount; j++){
             let randomIndexLocation = Math.floor(Math.random() * (indexList.length - 1))
             let randomIndex = indexList[randomIndexLocation]
-            let mineRow = Math.floor(randomIndex/mineFieldOptions.columns)
-            let mineColumn = randomIndex - mineRow*mineFieldOptions.columns
-            newMinefield[mineRow][mineColumn] = 1
+            let mineRow = Math.floor(randomIndex/columnCount)
+            let mineColumn = randomIndex - mineRow*columnCount
+            newMinefield[mineRow][mineColumn] = true
             indexList.splice(randomIndexLocation, 1)
         }
         newMinefield = newMinefield.map((row, rowIndex) => row.map((col, colIndex) => {return {
             id: `${rowIndex}_${colIndex}`, 
-            val: col, 
+            hasMine: newMinefield[rowIndex][colIndex], 
             row: rowIndex, 
             col: colIndex,
             isFlagged: false,
@@ -61,6 +75,32 @@ export const cellUpdater = (cell, minefield) => {
         minefield[cell.row][cell.col][update.key] = update.val
     })
     return minefield
+}
+
+export const getOffsetCoordinate = (cell, index) => {
+    var row = cell.row + ([0,1,2].includes(index) ? -1 : [3,4].includes(index) ? 0 : 1)
+    var col = cell.col + ([0,3,5].includes(index) ? -1 : [1,6].includes(index) ? 0 : 1)
+    return {row, col} 
+}
+
+export const getOffsetValue = (cellOffset, mineField) => {
+    if (
+        cellOffset.row > -1 && 
+        cellOffset.row < mineField.length && 
+        cellOffset.col > -1 && 
+        cellOffset.col < mineField[0].length) {
+        return mineField[cellOffset.row][cellOffset.col].hasMine
+    }
+    return null
+}
+
+export const adjacentCells = (cell, minefield) => {
+    const touching = Array(8).fill().map((elem, index) => {
+        const offset = getOffsetCoordinate(cell, index)
+        const hasMine = getOffsetValue(offset, minefield)
+        return {row: offset.row, col: offset.col, hasMine: hasMine}
+    })
+    return touching.filter((adjacentField) => adjacentField.hasMine !== null)
 }
 
 export default minefieldSlice.reducer;

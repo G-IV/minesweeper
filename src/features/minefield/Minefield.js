@@ -11,7 +11,7 @@ export default function Minefield(){
     const dispatch = useDispatch();
     const minefield = useSelector(selectMineField);
     useEffect(() => {
-        dispatch(generateMineField())
+        dispatch(generateMineField({count: 2, rows: 2, columns: 3}))
     }, [dispatch])
     return ( 
         <>
@@ -22,8 +22,8 @@ export default function Minefield(){
                 {
                     minefield.map((row) =>(
                         <div className={`${minefieldStyles.minefieldRow}`} key={`row_${row[0].row}`}>
-                            {row.map((pavlov) => (
-                                <div className={`pavlov`} key={`${pavlov.id}`}><Cell props={pavlov}/></div>
+                            {row.map((cell) => (
+                                <div className={`cell`} key={`${cell.id}`}><Cell props={cell}/></div>
                             ))}
                         </div>
                     ))
