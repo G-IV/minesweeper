@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { ReactComponent as BlankSquare } from '../../assets/BlankSquare.svg'
 import { ReactComponent as FlagSquare } from '../../assets/FlagSquare.svg'
-// import { ReactComponent as Bomb } from '../../assets/Bomb.svg'
+import { ReactComponent as Bomb } from '../../assets/Bomb.svg'
 
 import cellStyles from './Cell.module.css'
 
@@ -12,22 +12,15 @@ import {
     updateAdjacentCells,
     updateCell
 } from "../minefield/minefieldSlice";
-import { 
-    selectRow, 
-    selectCol, 
-    selectAdjacentMineCount, 
-    selectHasMine, 
-    initCell
-} from "./cellSlice";
 
 export default function Cell({props}){
     let dispatch = useDispatch()
+    
+    const [leftMouse, setLeftMouse] = useState(false)
+    const [rightMouse, setRightMouse] = useState(false)
+    const [adjMineCount, setAdjMineCount] = useState([])
 
     let minefield = useSelector(selectMineField)
-    let row = useSelector(selectRow)
-    let col = useSelector(selectCol)
-    let adjacentMineCount = useSelector(selectAdjacentMineCount)
-    let hasMine = useSelector(selectHasMine)
 
     useEffect(() => {
         dispatch(updateAdjacentCells(props))
@@ -36,20 +29,53 @@ export default function Cell({props}){
             col: props.col, 
             updates:[{key: 'isCleared', val: false}, {key: 'isFlagged', val: false}]
         }))
-        dispatch(initCell({
-            row: props.row, col: props.col,
-            hasMine: minefield[props.row][props.col].hasMine,
-            adjacentMineCount: minefield[props.row][props.col].adjacentCells.length
-        }))
     }, [])
+
+    useEffect(() => {
+        setAdjMineCount(minefield[props.row][props.col].adjacentCells.filter((cell) => cell.hasMine).length)
+    }, [minefield])
+
+    // Mouse Actions
+    const mouseDown = (e) => {
+        if(e.button === 0){
+            setLeftMouse(true)
+        } else if (e.button === 2) {
+            setRightMouse(true)
+        }
+    }
+
+    const mouseUp = (e) => {
+        if(e.button === 0){
+            setLeftMouse(false)
+        } else if (e.button === 2) {
+            setRightMouse(false)
+        }
+    }
+
+    const clearCell = (e) => {
+        console.log('here');
+        dispatch(updateCell({row: props.row, col: props.col, updates:[{key: 'isCleared', val: true}]}))
+    }
+
+    const flagCell = (e) => {
+        e.preventDefault()
+        let flagged = minefield[props.row][props.col].isFlagged
+        dispatch(updateCell({row: props.row, col: props.col, updates:[{key: 'isFlagged', val: !flagged}]}))
+    }
 
     return (
         <div className={`${cellStyles.square}`}>
-            {minefield.isCleared && <div className='uncovered'>
-                {/* {props.val === 1 ? <Bomb  className={`${cellStyles.square}`}/> : <div>{adjacentMinesCount()}</div>} */}
+            {minefield[props.row][props.col].isCleared && <div className='uncovered'>
+                {props.hasMine ? 
+                    <Bomb  className={`${cellStyles.square}`}/> : <div>{adjMineCount}</div>
+                }
             </div>}
-            {!minefield.isCleared && !minefield.isFlagged && <BlankSquare className={`${cellStyles.square}`} key={props.id} />}
-            {!minefield.isCleared && minefield.isFlagged && <FlagSquare className={`${cellStyles.square}`} key={props.id} />}
+            {!minefield[props.row][props.col].isCleared && !minefield[props.row][props.col].isFlagged && 
+                <BlankSquare className={`${cellStyles.square}`} key={props.id} onClick={clearCell}/>
+            }
+            {!minefield[props.row][props.col].isCleared && minefield[props.row][props.col].isFlagged && 
+                <FlagSquare className={`${cellStyles.square}`} key={props.id} onClick={flagCell}/>
+            }
         </div>
     )
 }
