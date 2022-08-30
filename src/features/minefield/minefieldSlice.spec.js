@@ -112,33 +112,25 @@ describe('minefield reducer', () => {
     })
     it('should clear cells surrounding a cell with no adjacent mines', () => {
         const mineField = [
-            [{id: '0_0', hasMine: true,  row: 0, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+            [{id: '0_0', hasMine: false, row: 0, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '0_1', hasMine: false, row: 0, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '0_2', hasMine: false, row: 0, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '0_3', hasMine: false, row: 0, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '0_4', hasMine: true,  row: 0, col: 4, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '0_5', hasMine: false, row: 0, col: 5, isFlagged: false, isCleared: false, adjacentCells: []},],
+             {id: '0_3', hasMine: false, row: 0, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
             [{id: '1_0', hasMine: false, row: 1, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '1_1', hasMine: false, row: 1, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '1_2', hasMine: false, row: 1, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '1_3', hasMine: false, row: 1, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '1_4', hasMine: false, row: 1, col: 4, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '1_5', hasMine: false, row: 1, col: 5, isFlagged: false, isCleared: false, adjacentCells: []},],
-            [{id: '2_0', hasMine: false, row: 2, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '1_3', hasMine: false, row: 1, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
+            [{id: '2_0', hasMine: true,  row: 2, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '2_1', hasMine: false, row: 2, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '2_2', hasMine: false, row: 2, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '2_3', hasMine: false, row: 2, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '2_4', hasMine: true,  row: 2, col: 4, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '2_5', hasMine: false, row: 2, col: 5, isFlagged: false, isCleared: false, adjacentCells: []},],
-            [{id: '3_0', hasMine: false, row: 2, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '2_3', hasMine: false, row: 2, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
+            [{id: '3_0', hasMine: false, row: 3, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '3_1', hasMine: false, row: 3, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '3_2', hasMine: true,  row: 3, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '3_3', hasMine: false, row: 3, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '3_4', hasMine: true,  row: 3, col: 4, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '3_5', hasMine: false, row: 3, col: 5, isFlagged: false, isCleared: false, adjacentCells: []},]
+             {id: '3_2', hasMine: false, row: 3, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '3_3', hasMine: false, row: 3, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},]
         ]
-        let updatedMinefield = Array(4).fill().map(() => Array(6).fill());
-        let expectedMinefield = Array(4).fill().map(() => Array(6).fill());
+        let updatedMinefield = Array(4).fill().map(() => Array(4).fill());
+        let expectedMinefield = Array(4).fill().map(() => Array(4).fill());
         updatedMinefield.forEach((row, rIndex) => {
             row.forEach((cell, cIndex) => {
                 const adjCells = adjacentCells({row: rIndex, col: cIndex}, mineField)
@@ -150,10 +142,15 @@ describe('minefield reducer', () => {
         })
         const state = {minefield: updatedMinefield}
         let selectedCell = updatedMinefield[1][2]
-        selectedCell.adjacentCells.forEach((cell) => {
-            expectedMinefield[cell.row][cell.col].isCleared = true
+        expectedMinefield.forEach((row) => {
+            row.forEach((cell) => {
+                if((cell.row !== 2 || cell.col !== 0) && (cell.row !== 3 || cell.col !== 0)){
+                    cell.isCleared = true
+                } else {
+                    cell.isCleared = false
+                }
+            }) 
         })
-        expectedMinefield[selectedCell.row][selectedCell.col].isCleared = true
         const actualState = minefieldReducer(state, clearCell(selectedCell))
         expect(actualState.minefield).toEqual(expectedMinefield)
     })
@@ -324,33 +321,25 @@ describe('helper functions', () => {
     })
     it('should return a minefield with the adjacent cells cleared when adjacent mine count is 0', () => {
         const mineField = [
-            [{id: '0_0', hasMine: true,  row: 0, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+            [{id: '0_0', hasMine: false, row: 0, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '0_1', hasMine: false, row: 0, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '0_2', hasMine: false, row: 0, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '0_3', hasMine: false, row: 0, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '0_4', hasMine: true,  row: 0, col: 4, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '0_5', hasMine: false, row: 0, col: 5, isFlagged: false, isCleared: false, adjacentCells: []},],
+             {id: '0_3', hasMine: false, row: 0, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
             [{id: '1_0', hasMine: false, row: 1, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '1_1', hasMine: false, row: 1, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '1_2', hasMine: false, row: 1, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '1_3', hasMine: false, row: 1, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '1_4', hasMine: false, row: 1, col: 4, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '1_5', hasMine: false, row: 1, col: 5, isFlagged: false, isCleared: false, adjacentCells: []},],
-            [{id: '2_0', hasMine: false, row: 2, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '1_3', hasMine: false, row: 1, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
+            [{id: '2_0', hasMine: true,  row: 2, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '2_1', hasMine: false, row: 2, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '2_2', hasMine: false, row: 2, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '2_3', hasMine: false, row: 2, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '2_4', hasMine: true,  row: 2, col: 4, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '2_5', hasMine: false, row: 2, col: 5, isFlagged: false, isCleared: false, adjacentCells: []},],
-            [{id: '3_0', hasMine: false, row: 2, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '2_3', hasMine: false, row: 2, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
+            [{id: '3_0', hasMine: false, row: 3, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '3_1', hasMine: false, row: 3, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '3_2', hasMine: true,  row: 3, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '3_3', hasMine: false, row: 3, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '3_4', hasMine: true,  row: 3, col: 4, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '3_5', hasMine: false, row: 3, col: 5, isFlagged: false, isCleared: false, adjacentCells: []},]
+             {id: '3_2', hasMine: false, row: 3, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '3_3', hasMine: false, row: 3, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},]
         ]
-        let updatedMinefield = Array(4).fill().map(() => Array(6).fill());
-        let expectedMinefield = Array(4).fill().map(() => Array(6).fill());
+        let updatedMinefield = Array(4).fill().map(() => Array(4).fill());
+        let expectedMinefield = Array(4).fill().map(() => Array(4).fill());
         updatedMinefield.forEach((row, rIndex) => {
             row.forEach((cell, cIndex) => {
                 const adjCells = adjacentCells({row: rIndex, col: cIndex}, mineField)
@@ -362,10 +351,15 @@ describe('helper functions', () => {
         })
         let selectedCell = updatedMinefield[1][2]
         const actualMinefield = cellClearer(selectedCell, [...updatedMinefield])
-        selectedCell.adjacentCells.forEach((cell) => {
-            expectedMinefield[cell.row][cell.col].isCleared = true
+        expectedMinefield.forEach((row) => {
+            row.forEach((cell) => {
+                if((cell.row !== 2 || cell.col !== 0) && (cell.row !== 3 || cell.col !== 0)){
+                    cell.isCleared = true
+                } else {
+                    cell.isCleared = false
+                }
+            }) 
         })
-        expectedMinefield[selectedCell.row][selectedCell.col].isCleared = true
         expect(actualMinefield).toEqual(expectedMinefield)
     })
 })

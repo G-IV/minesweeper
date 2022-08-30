@@ -73,14 +73,26 @@ export const generateMines = (mineFieldOptions={count: 99, rows: 16, columns: 30
 }
 
 export const cellClearer = (cell, mineField) => {
-    const adjacentCells = mineField[cell.row][cell.col].adjacentCells
-    const mineCount = adjacentCells.filter((cell) => cell.hasMine).length
+    // const adjacentCells = mineField[cell.row][cell.col].adjacentCells
+    // const mineCount = adjacentCells.filter((cell) => cell.hasMine).length
+    // mineField[cell.row][cell.col].isCleared = true
+    // if (mineCount === 0) {
+    //     // I think I need a recursive function to clear out the appropriate cells if adjacent cells also have 0 adjacent mines
+    //     adjacentCells.forEach((c) => {
+    //         mineField[c.row][c.col].isCleared = true
+    //     })
+    // }
+
+    // Clear the clicked cell
     mineField[cell.row][cell.col].isCleared = true
-    if (mineCount === 0) {
-        // I think I need a recursive function to clear out the appropriate cells if adjacent cells also have 0 adjacent mines
-        adjacentCells.forEach((c) => {
-            mineField[c.row][c.col].isCleared = true
-        })
+
+    // Check the cell's adjacent fields for mines, if none, apply algorithm to clear out all adjacent cells with no mines
+    let adjacentCellList = mineField[cell.row][cell.col].adjacentCells
+    const mineQty = adjacentCellList.reduce((prev, curr) => {return prev + curr.hasMine ? 1 : 0}, 0)
+    if(mineQty === 0){
+        adjacentCellList
+            .filter((adjCell) => mineField[adjCell.row][adjCell.col].isCleared === false)
+            .forEach((adjCell) => {mineField = cellClearer(adjCell, mineField)})
     }
     return mineField
 }
