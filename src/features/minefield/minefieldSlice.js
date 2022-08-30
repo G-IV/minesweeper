@@ -86,6 +86,12 @@ export const cellClearer = (cell, mineField) => {
     // Clear the clicked cell
     mineField[cell.row][cell.col].isCleared = true
 
+    // If the user uncovered a mine, show all the mines
+    if(mineField[cell.row][cell.col].hasMine){
+        mineField.forEach((row) => row.forEach((cell) => cell.isCleared = cell.hasMine ? true : cell.isCleared))
+        return mineField
+    }
+
     // Check the cell's adjacent fields for mines, if none, apply algorithm to clear out all adjacent cells with no mines
     let adjacentCellList = mineField[cell.row][cell.col].adjacentCells
     const mineQty = adjacentCellList.reduce((prev, curr) => {return prev + curr.hasMine ? 1 : 0}, 0)
