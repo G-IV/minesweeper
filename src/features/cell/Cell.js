@@ -10,7 +10,8 @@ import cellStyles from './Cell.module.css'
 import { 
     selectMineField,
     updateAdjacentCells,
-    updateCell
+    updateCell,
+    clearCell
 } from "../minefield/minefieldSlice";
 
 export default function Cell({props}){
@@ -52,9 +53,8 @@ export default function Cell({props}){
         }
     }
 
-    const clearCell = (e) => {
-        console.log('here');
-        dispatch(updateCell({row: props.row, col: props.col, updates:[{key: 'isCleared', val: true}]}))
+    const cellCleared = (e) => {
+        dispatch(clearCell(props))
     }
 
     const flagCell = (e) => {
@@ -71,10 +71,10 @@ export default function Cell({props}){
                 }
             </div>}
             {!minefield[props.row][props.col].isCleared && !minefield[props.row][props.col].isFlagged && 
-                <BlankSquare className={`${cellStyles.square}`} key={props.id} onClick={clearCell}/>
+                <BlankSquare className={`${cellStyles.square}`} key={props.id} onClick={cellCleared} onContextMenu={flagCell}/>
             }
             {!minefield[props.row][props.col].isCleared && minefield[props.row][props.col].isFlagged && 
-                <FlagSquare className={`${cellStyles.square}`} key={props.id} onClick={flagCell}/>
+                <FlagSquare className={`${cellStyles.square}`} key={props.id} onContextMenu={flagCell}/>
             }
         </div>
     )

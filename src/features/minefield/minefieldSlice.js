@@ -25,11 +25,14 @@ export const minefieldSlice = createSlice({
                 updates: [{key: 'adjacentCells', val: adjacent}]
             }
             state.minefield = cellUpdater(cell, [...state.minefield])
+        },
+        clearCell: (state, action) => {
+            state.minefield = cellClearer(action.payload, [...state.minefield])
         }
     }
 })
 
-export const { updateMinefield, generateMineField, updateCell, updateAdjacentCells } = minefieldSlice.actions
+export const { updateMinefield, generateMineField, updateCell, updateAdjacentCells, clearCell } = minefieldSlice.actions
 
 export const selectMineField = (state) => state.minefield.minefield
 
@@ -41,7 +44,6 @@ export const generateMines = (mineFieldOptions={count: 99, rows: 16, columns: 30
         Expert 16x30 99
     */
         // validate args, use defaults if any are missing
-        const argList = Object.keys(mineFieldOptions)
         const rowCount = mineFieldOptions.rows
         const columnCount = mineFieldOptions.columns
         const mineCount = mineFieldOptions.count > rowCount * columnCount ? rowCount * columnCount * .2 : mineFieldOptions.count
@@ -68,6 +70,19 @@ export const generateMines = (mineFieldOptions={count: 99, rows: 16, columns: 30
             adjacentCells: []
         }}))
         return newMinefield
+}
+
+export const cellClearer = (cell, mineField) => {
+    const adjacentCells = mineField[cell.row][cell.col].adjacentCells
+    const mineCount = adjacentCells.filter((cell) => cell.hasMine).length
+    mineField[cell.row][cell.col].isCleared = true
+    if (mineCount === 0) {
+        // I think I need a recursive function to clear out the appropriate cells if adjacent cells also have 0 adjacent mines
+        adjacentCells.forEach((c) => {
+            mineField[c.row][c.col].isCleared = true
+        })
+    }
+    return mineField
 }
 
 export const cellUpdater = (cell, minefield) => {

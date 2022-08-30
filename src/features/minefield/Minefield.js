@@ -11,7 +11,7 @@ export default function Minefield(){
     const dispatch = useDispatch();
     const minefield = useSelector(selectMineField);
     useEffect(() => {
-        dispatch(generateMineField({count: 8, rows: 4, columns: 5}))
+        dispatch(generateMineField({count: 1, rows: 4, columns:5}))
     }, [dispatch])
     return ( 
         <>
