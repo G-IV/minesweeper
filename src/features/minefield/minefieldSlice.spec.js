@@ -193,6 +193,46 @@ describe('minefield reducer', () => {
         const actualState = minefieldReducer(state, clearCell(selectedCell))
         expect(actualState.minefield).toEqual(expectedMinefield)
     })
+    it('should show all mines if a cell with a mine is cleared', () => {
+        const mineField = [
+            [{id: '0_0', hasMine: false, row: 0, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '0_1', hasMine: true,  row: 0, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '0_2', hasMine: false, row: 0, col: 2, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '0_3', hasMine: false, row: 0, col: 3, isFlagged: false, isCleared: true, adjacentCells: []},],
+            [{id: '1_0', hasMine: false, row: 1, col: 0, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '1_1', hasMine: false, row: 1, col: 1, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '1_2', hasMine: false, row: 1, col: 2, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '1_3', hasMine: false, row: 1, col: 3, isFlagged: false, isCleared: true, adjacentCells: []},],
+            [{id: '2_0', hasMine: true,  row: 2, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '2_1', hasMine: true,  row: 2, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '2_2', hasMine: false, row: 2, col: 2, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '2_3', hasMine: false, row: 2, col: 3, isFlagged: false, isCleared: true, adjacentCells: []},],
+            [{id: '3_0', hasMine: true,  row: 3, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '3_1', hasMine: false, row: 3, col: 1, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '3_2', hasMine: false, row: 3, col: 2, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '3_3', hasMine: false, row: 3, col: 3, isFlagged: false, isCleared: true, adjacentCells: []},]
+        ]
+        let updatedMinefield = Array(4).fill().map(() => Array(4).fill());
+        let expectedMinefield = Array(4).fill().map(() => Array(4).fill());
+        updatedMinefield.forEach((row, rIndex) => {
+            row.forEach((cell, cIndex) => {
+                const adjCells = adjacentCells({row: rIndex, col: cIndex}, mineField)
+                let thisCell = {...mineField[rIndex][cIndex]}
+                thisCell.adjacentCells = adjCells
+                updatedMinefield[thisCell.row][thisCell.col] = {...thisCell}
+                expectedMinefield[thisCell.row][thisCell.col] = {...thisCell}
+            })
+        })
+        const state = {minefield: updatedMinefield}
+        let selectedCell = updatedMinefield[0][0]
+        const actualState = minefieldReducer(state, clearCell(selectedCell))
+        expectedMinefield.forEach((row) => row.forEach((cell) => {
+            cell.isCleared = !cell.hasMine
+            cell.isFlagged = cell.hasMine
+            return cell
+        }))
+        expect(actualState.minefield).toEqual(expectedMinefield)
+    })
 })
 
 describe('helper functions', () => {
@@ -437,6 +477,45 @@ describe('helper functions', () => {
         expectedMinefield[2][0].isCleared = true
         expectedMinefield[2][1].isCleared = true
         expectedMinefield[3][0].isCleared = true
+        expect(actualMinefield).toEqual(expectedMinefield)
+    })
+    it('should show all mines if a cell with a mine is cleared', () => {
+        const mineField = [
+            [{id: '0_0', hasMine: false, row: 0, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '0_1', hasMine: true,  row: 0, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '0_2', hasMine: false, row: 0, col: 2, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '0_3', hasMine: false, row: 0, col: 3, isFlagged: false, isCleared: true, adjacentCells: []},],
+            [{id: '1_0', hasMine: false, row: 1, col: 0, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '1_1', hasMine: false, row: 1, col: 1, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '1_2', hasMine: false, row: 1, col: 2, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '1_3', hasMine: false, row: 1, col: 3, isFlagged: false, isCleared: true, adjacentCells: []},],
+            [{id: '2_0', hasMine: true,  row: 2, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '2_1', hasMine: true,  row: 2, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '2_2', hasMine: false, row: 2, col: 2, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '2_3', hasMine: false, row: 2, col: 3, isFlagged: false, isCleared: true, adjacentCells: []},],
+            [{id: '3_0', hasMine: true,  row: 3, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '3_1', hasMine: false, row: 3, col: 1, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '3_2', hasMine: false, row: 3, col: 2, isFlagged: false, isCleared: true, adjacentCells: []},
+             {id: '3_3', hasMine: false, row: 3, col: 3, isFlagged: false, isCleared: true, adjacentCells: []},]
+        ]
+        let updatedMinefield = Array(4).fill().map(() => Array(4).fill());
+        let expectedMinefield = Array(4).fill().map(() => Array(4).fill());
+        updatedMinefield.forEach((row, rIndex) => {
+            row.forEach((cell, cIndex) => {
+                const adjCells = adjacentCells({row: rIndex, col: cIndex}, mineField)
+                let thisCell = {...mineField[rIndex][cIndex]}
+                thisCell.adjacentCells = adjCells
+                updatedMinefield[thisCell.row][thisCell.col] = {...thisCell}
+                expectedMinefield[thisCell.row][thisCell.col] = {...thisCell}
+            })
+        })
+        let selectedCell = updatedMinefield[0][0]
+        const actualMinefield = cellClearer(selectedCell, [...updatedMinefield])
+        expectedMinefield.forEach((row) => row.forEach((cell) => {
+            cell.isCleared = !cell.hasMine
+            cell.isFlagged = cell.hasMine
+            return cell
+        }))
         expect(actualMinefield).toEqual(expectedMinefield)
     })
 })

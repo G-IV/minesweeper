@@ -73,16 +73,6 @@ export const generateMines = (mineFieldOptions={count: 99, rows: 16, columns: 30
 }
 
 export const cellClearer = (cell, mineField) => {
-    // const adjacentCells = mineField[cell.row][cell.col].adjacentCells
-    // const mineCount = adjacentCells.filter((cell) => cell.hasMine).length
-    // mineField[cell.row][cell.col].isCleared = true
-    // if (mineCount === 0) {
-    //     // I think I need a recursive function to clear out the appropriate cells if adjacent cells also have 0 adjacent mines
-    //     adjacentCells.forEach((c) => {
-    //         mineField[c.row][c.col].isCleared = true
-    //     })
-    // }
-
     // Clear the clicked cell
     mineField[cell.row][cell.col].isCleared = true
 
@@ -90,6 +80,14 @@ export const cellClearer = (cell, mineField) => {
     if(mineField[cell.row][cell.col].hasMine){
         mineField.forEach((row) => row.forEach((cell) => cell.isCleared = cell.hasMine ? true : cell.isCleared))
         return mineField
+    }
+
+    // Check if all the non-mine spaces have been cleared
+    const clearedCellQty = mineField.flat().filter((cell) => cell.isCleared).length
+    const mineCount = mineField.flat().filter((cell) => cell.hasMine).length
+    const totalCleared = mineField.length * mineField[0].length - mineCount
+    if(clearedCellQty === totalCleared){
+        mineField.forEach((row) => row.forEach((cell) => cell.isFlagged = cell.hasMine))
     }
 
     // Check the cell's adjacent fields for mines, if none, apply algorithm to clear out all adjacent cells with no mines
