@@ -24,15 +24,6 @@ export default function Cell({props}){
     let minefield = useSelector(selectMineField)
 
     useEffect(() => {
-        dispatch(updateAdjacentCells(props))
-        dispatch(updateCell({
-            row: props.row, 
-            col: props.col, 
-            updates:[{key: 'isCleared', val: false}, {key: 'isFlagged', val: false}]
-        }))
-    }, [])
-
-    useEffect(() => {
         setAdjMineCount(minefield[props.row][props.col].adjacentCells.filter((cell) => cell.hasMine).length)
     }, [minefield])
 

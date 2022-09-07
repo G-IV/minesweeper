@@ -8,9 +8,6 @@ export const minefieldSlice = createSlice({
     name: 'minefield',
     initialState,
     reducers: {
-        updateMinefield: (state, action) => {
-            state.minefield = action.payload
-        },
         generateMineField: (state, action) => {
             state.minefield = generateMines(action.payload)
         },
@@ -32,11 +29,11 @@ export const minefieldSlice = createSlice({
     }
 })
 
-export const { updateMinefield, generateMineField, updateCell, updateAdjacentCells, clearCell } = minefieldSlice.actions
+export const { generateMineField, updateCell, updateAdjacentCells, clearCell } = minefieldSlice.actions
 
 export const selectMineField = (state) => state.minefield.minefield
 
-export const generateMines = (mineFieldOptions={count: 99, rows: 16, columns: 30}) => {
+export const generateMines = (mineFieldOptions={count: 0, rows: 16, columns: 30, cell: {row: -1, col: -1}}) => {
     /*
         HxW mines
         Beginner: 9x9 10
@@ -47,18 +44,41 @@ export const generateMines = (mineFieldOptions={count: 99, rows: 16, columns: 30
         const rowCount = mineFieldOptions.rows
         const columnCount = mineFieldOptions.columns
         const mineCount = mineFieldOptions.count > rowCount * columnCount ? rowCount * columnCount * .2 : mineFieldOptions.count
+        const cell = mineFieldOptions.cell
         let newMinefield = Array(rowCount).fill().map(() => Array(columnCount).fill(false));
-        let indexList = []
-        for (var i = 0; i < rowCount * columnCount; i++){
-            indexList.push(i)
-        }
-        for (var j = 0; j < mineCount; j++){
-            let randomIndexLocation = Math.floor(Math.random() * (indexList.length - 1))
-            let randomIndex = indexList[randomIndexLocation]
-            let mineRow = Math.floor(randomIndex/columnCount)
-            let mineColumn = randomIndex - mineRow*columnCount
-            newMinefield[mineRow][mineColumn] = true
-            indexList.splice(randomIndexLocation, 1)
+        let mustBeClear = []
+        // If the mine count is greater than or equal to the size of the field, there is no reason to attempt to give the user a cell w/ no mine
+        if (cell.row > -1 && cell.col > -1) {
+            if(mineCount < rowCount * columnCount){
+                // At a minimum, the clicked cell should be clear
+                const cellIndex = cell.row * columnCount + cell.col
+                mustBeClear.push(cellIndex)
+                // Calculate the number of surrounding cells that should be cleared.
+                // Total Cells in the minefield - (mineCount + 1) <-- +1 to include the already clicked cell
+                // At the most, there can only be 8 surrounding cells
+                let offsetQty = Math.min(rowCount * columnCount - (mineCount + 1), 8)
+                if (offsetQty > 0){
+                    // The way I'm building the array means I'll filter out the value "4" -> but if I filter it out, I need to increment the offsetQty to ensure the same number of adjacent cells are handled
+                    offsetQty = offsetQty > 4 ? offsetQty + 1 : offsetQty
+                    mustBeClear = mustBeClear.concat([...Array(offsetQty).keys()].filter((val) => val !== 4).map((offset) => {
+                        const offsetCoordinates = getOffsetCoordinate(cell, offset)
+                        return offsetCoordinates.row * columnCount + offsetCoordinates.col
+                    }))
+                }
+            }
+            let indexList = [...Array(rowCount * columnCount).keys()]
+            for (var j = 0; j < mineCount; j++){
+                let randomIndexLocation = -1
+                // I used a do while loop to ensure that the cell clicked + it's adjacent cells have no mines
+                do {
+                    randomIndexLocation = Math.floor(Math.random() * (indexList.length))
+                } while (mustBeClear.includes(indexList[randomIndexLocation]));
+                let randomIndex = indexList[randomIndexLocation]
+                let mineRow = Math.floor(randomIndex/columnCount)
+                let mineColumn = randomIndex - mineRow*columnCount
+                newMinefield[mineRow][mineColumn] = true
+                indexList.splice(randomIndexLocation, 1)
+            }
         }
         newMinefield = newMinefield.map((row, rowIndex) => row.map((col, colIndex) => {return {
             id: `${rowIndex}_${colIndex}`, 
@@ -69,10 +89,21 @@ export const generateMines = (mineFieldOptions={count: 99, rows: 16, columns: 30
             isCleared: false,
             adjacentCells: []
         }}))
+        newMinefield.forEach((row) => {
+            row.forEach((c) => {
+                c.adjacentCells = adjacentCells(c, newMinefield)
+            })
+        })
         return newMinefield
 }
 
 export const cellClearer = (cell, mineField) => {
+
+    // If there are no cleared cells, this indicates that the user is starting a new game.
+    if(mineField.flat().filter((cell) => cell.isCleared).length === 0){
+        mineField = generateMines({count: 99, rows: 16, columns: 30, cell: {row: cell.row, col: cell.col}})
+    }
+
     // Clear the clicked cell
     mineField[cell.row][cell.col].isCleared = true
 
@@ -109,8 +140,8 @@ export const cellUpdater = (cell, minefield) => {
 }
 
 export const getOffsetCoordinate = (cell, index) => {
-    var row = cell.row + ([0,1,2].includes(index) ? -1 : [3,4].includes(index) ? 0 : 1)
-    var col = cell.col + ([0,3,5].includes(index) ? -1 : [1,6].includes(index) ? 0 : 1)
+    var row = cell.row + ([0,1,2].includes(index) ? -1 : [3,5].includes(index) ? 0 : 1)
+    var col = cell.col + ([0,3,6].includes(index) ? -1 : [1,7].includes(index) ? 0 : 1)
     return {row, col} 
 }
 
@@ -126,8 +157,17 @@ export const getOffsetValue = (cellOffset, mineField) => {
 }
 
 export const adjacentCells = (cell, minefield) => {
-    const touching = Array(8).fill().map((elem, index) => {
-        const offset = getOffsetCoordinate(cell, index)
+    /* 
+        [0] [1] [2]
+        [3] [4] [5]
+        [6] [7] [8]
+    Where [4] is the center cell that I need to find the adjacent cells for.
+    So I generate a 1x9 array, get the keys (this way I generate an array of [0,1,2,...,8])
+    I filter out #4 (since that isn't an adjacent cell)
+    I use map to return an array of cells based on the index of the adjacent cell.
+    */
+    const touching = [...Array(9).keys()].filter((val) => val !== 4).map((elem, index, arr) => {
+        const offset = getOffsetCoordinate(cell, elem)
         const hasMine = getOffsetValue(offset, minefield)
         return {row: offset.row, col: offset.col, hasMine: hasMine}
     })
