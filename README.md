@@ -1,8 +1,20 @@
 # Minesweeper
 I want to build an app that users can use to play minesweeper.  
+ - Game is playable, but you have to refresh the browser to reset the game.  So I'd call this the MVP
+ - ToDo
+    - Button to reset game
+    - Timer showing how long the current game has been running
+    - Remaining mines (Total Mine Count - Flagged Cells)
+    - Left + right mouse clicks clearing adjacent cells
+    - Disable right click on cleared cells
+    When this list is complete, I'll try to host this on AWS
 I want to have a hover-over feature for cleared cells that shows the odds for each surrounding, uncleared cell of that cell being a mine, and why.
 I want to have a hover-over feature for uncleared cells that shows the odds of that cell being a mine, and why.
 I want to have an auto-solve feature.
+
+While this isn't hosted on AWS, one thing I would like to point out is that this app has been developed following a TDD process.  
+
+The store currenly exists only in hte minefieldSlice.js file.  I used the newest Redux version to create this app, and I haven't dug into how using slices changes setting up the store.  
 
 
 I'm just leaving the default readme material here at the bottom.
