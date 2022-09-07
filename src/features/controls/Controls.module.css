@@ -1,0 +1,18 @@
+.gameControls{
+    width: 100%;
+    height: 40px;
+    background-color: #7E7E7E;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mineCount{
+    padding-left: 20px;
+    background-color: #7E7E7E;
+}
+
+.gameTimer{
+    padding-right: 20px;
+    background-color: #7E7E7E;
+}

@@ -13,22 +13,17 @@ export default function Minefield(){
     useEffect(() => {
         dispatch(generateMineField())
     }, [dispatch])
-    return ( 
-        <>
-            <div className="game-controls">
-                {/* This is where the remaining uncovered mine count, game reset, and elapsed time indicator will go. I will likely make this a separate component */}
-            </div>
-            <div className={minefieldStyles.gameGrid}>
-                {
-                    minefield.map((row) =>(
-                        <div className={`${minefieldStyles.minefieldRow}`} key={`row_${row[0].row}`}>
-                            {row.map((cell) => (
-                                <div className={`cell`} key={`${cell.id}`}><Cell props={cell}/></div>
-                            ))}
-                        </div>
-                    ))
-                }
-            </div>
-        </>
+    return (
+        <div className={minefieldStyles.gameGrid}>
+            {
+                minefield.map((row) =>(
+                    <div className={`${minefieldStyles.minefieldRow}`} key={`row_${row[0].row}`}>
+                        {row.map((cell) => (
+                            <div className={`cell`} key={`${cell.id}`}><Cell props={cell}/></div>
+                        ))}
+                    </div>
+                ))
+            }
+        </div>
     )
 }
