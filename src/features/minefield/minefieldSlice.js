@@ -25,11 +25,14 @@ export const minefieldSlice = createSlice({
         },
         clearCell: (state, action) => {
             state.minefield = cellClearer(action.payload, [...state.minefield])
+        },
+        clearAdjacentCells: (state, action) => {
+            state.minefield = adjacentCellsClearer(action.payload, [...state.minefield])
         }
     }
 })
 
-export const { generateMineField, updateCell, updateAdjacentCells, clearCell } = minefieldSlice.actions
+export const { generateMineField, updateCell, updateAdjacentCells, clearCell, clearAdjacentCells } = minefieldSlice.actions
 
 export const selectMineField = (state) => state.minefield.minefield
 
@@ -172,6 +175,20 @@ export const adjacentCells = (cell, minefield) => {
         return {row: offset.row, col: offset.col, hasMine: hasMine}
     })
     return touching.filter((adjacentField) => adjacentField.hasMine !== null)
+}
+
+export const adjacentCellsClearer = (cell, minefield) => {
+    const adjacentCells = [...minefield[cell.row][cell.col].adjacentCells]
+    const mineCount = adjacentCells.map((c) => minefield[c.row][c.col].hasMine ? 1 : 0).reduce((prev, curr) => prev + curr)
+    const flaggedCount = adjacentCells.map((c) => minefield[c.row][c.col].isFlagged ? 1 : 0).reduce((prev, curr) => prev + curr)
+    if(mineCount === flaggedCount){
+        adjacentCells.forEach((c) => {
+            if(!minefield[c.row][c.col].isFlagged){
+                minefield = cellClearer(c, minefield)
+            }
+        })
+    }
+    return minefield
 }
 
 export default minefieldSlice.reducer;

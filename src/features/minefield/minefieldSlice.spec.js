@@ -9,6 +9,7 @@ import minefieldReducer, {
     updateCell,
     cellClearer,
     clearCell,
+    adjacentCellsClearer,
 } from './minefieldSlice';
 
 // Commonly used functions.
@@ -18,6 +19,18 @@ const countMines = (minefield=[]) => {
 }
 const mineFieldSize = (minefield) => {
     return [minefield.length, minefield[0].length]
+}
+const setAdjacentFields = (minefield) => {
+    minefield.forEach((row, rIndex) => {
+        row.forEach((cell, cIndex) => {
+            const adjCells = adjacentCells({row: rIndex, col: cIndex}, minefield)
+            // let thisCell = {...minefield[rIndex][cIndex]}
+            // thisCell.adjacentCells = adjCells
+            // minefield[thisCell.row][thisCell.col] = {...thisCell}
+            minefield[rIndex][cIndex].adjacentCells = adjCells
+        })
+    })
+    return minefield
 }
 
 Array.prototype.copyMinefield = function() {
@@ -496,20 +509,20 @@ describe('helper functions', () => {
         const mineField = [
             [{id: '0_0', hasMine: false, row: 0, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '0_1', hasMine: true,  row: 0, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '0_2', hasMine: false, row: 0, col: 2, isFlagged: false, isCleared: true, adjacentCells: []},
-             {id: '0_3', hasMine: false, row: 0, col: 3, isFlagged: false, isCleared: true, adjacentCells: []},],
-            [{id: '1_0', hasMine: false, row: 1, col: 0, isFlagged: false, isCleared: true, adjacentCells: []},
-             {id: '1_1', hasMine: false, row: 1, col: 1, isFlagged: false, isCleared: true, adjacentCells: []},
-             {id: '1_2', hasMine: false, row: 1, col: 2, isFlagged: false, isCleared: true, adjacentCells: []},
-             {id: '1_3', hasMine: false, row: 1, col: 3, isFlagged: false, isCleared: true, adjacentCells: []},],
+             {id: '0_2', hasMine: false, row: 0, col: 2, isFlagged: false, isCleared: true,  adjacentCells: []},
+             {id: '0_3', hasMine: false, row: 0, col: 3, isFlagged: false, isCleared: true,  adjacentCells: []},],
+            [{id: '1_0', hasMine: false, row: 1, col: 0, isFlagged: false, isCleared: true,  adjacentCells: []},
+             {id: '1_1', hasMine: false, row: 1, col: 1, isFlagged: false, isCleared: true,  adjacentCells: []},
+             {id: '1_2', hasMine: false, row: 1, col: 2, isFlagged: false, isCleared: true,  adjacentCells: []},
+             {id: '1_3', hasMine: false, row: 1, col: 3, isFlagged: false, isCleared: true,  adjacentCells: []},],
             [{id: '2_0', hasMine: true,  row: 2, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
              {id: '2_1', hasMine: true,  row: 2, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '2_2', hasMine: false, row: 2, col: 2, isFlagged: false, isCleared: true, adjacentCells: []},
-             {id: '2_3', hasMine: false, row: 2, col: 3, isFlagged: false, isCleared: true, adjacentCells: []},],
+             {id: '2_2', hasMine: false, row: 2, col: 2, isFlagged: false, isCleared: true,  adjacentCells: []},
+             {id: '2_3', hasMine: false, row: 2, col: 3, isFlagged: false, isCleared: true,  adjacentCells: []},],
             [{id: '3_0', hasMine: true,  row: 3, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
-             {id: '3_1', hasMine: false, row: 3, col: 1, isFlagged: false, isCleared: true, adjacentCells: []},
-             {id: '3_2', hasMine: false, row: 3, col: 2, isFlagged: false, isCleared: true, adjacentCells: []},
-             {id: '3_3', hasMine: false, row: 3, col: 3, isFlagged: false, isCleared: true, adjacentCells: []},]
+             {id: '3_1', hasMine: false, row: 3, col: 1, isFlagged: false, isCleared: true,  adjacentCells: []},
+             {id: '3_2', hasMine: false, row: 3, col: 2, isFlagged: false, isCleared: true,  adjacentCells: []},
+             {id: '3_3', hasMine: false, row: 3, col: 3, isFlagged: false, isCleared: true,  adjacentCells: []},]
         ]
         let updatedMinefield = mineField.copyMinefield()
         let expectedMinefield = mineField.copyMinefield()
@@ -521,5 +534,68 @@ describe('helper functions', () => {
         }))
         const actualMinefield = cellClearer(selectedCell, [...updatedMinefield])
         expect(actualMinefield).toEqual(expectedMinefield)
+    })
+    it('should clear adjacent cells', () => {
+        const startingField = setAdjacentFields([
+            [{id: '0_0', hasMine: false, row: 0, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '0_1', hasMine: false, row: 0, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '0_2', hasMine: false, row: 0, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '0_3', hasMine: false, row: 0, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
+            [{id: '1_0', hasMine: false, row: 1, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '1_1', hasMine: false, row: 1, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '1_2', hasMine: false, row: 1, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '1_3', hasMine: false, row: 1, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
+            [{id: '2_0', hasMine: false, row: 2, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '2_1', hasMine: true,  row: 2, col: 1, isFlagged: true,  isCleared: false, adjacentCells: []},
+             {id: '2_2', hasMine: false, row: 2, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '2_3', hasMine: false, row: 2, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
+            [{id: '3_0', hasMine: false, row: 3, col: 0, isFlagged: false, isCleared: true,  adjacentCells: []},
+             {id: '3_1', hasMine: false, row: 3, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '3_2', hasMine: false, row: 3, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '3_3', hasMine: false, row: 3, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},]
+        ])
+        const expectedField = setAdjacentFields([
+            [{id: '0_0', hasMine: false, row: 0, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '0_1', hasMine: false, row: 0, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '0_2', hasMine: false, row: 0, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '0_3', hasMine: false, row: 0, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
+            [{id: '1_0', hasMine: false, row: 1, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '1_1', hasMine: false, row: 1, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '1_2', hasMine: false, row: 1, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '1_3', hasMine: false, row: 1, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
+            [{id: '2_0', hasMine: false, row: 2, col: 0, isFlagged: false, isCleared: true,  adjacentCells: []},
+             {id: '2_1', hasMine: true,  row: 2, col: 1, isFlagged: true,  isCleared: false, adjacentCells: []},
+             {id: '2_2', hasMine: false, row: 2, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '2_3', hasMine: false, row: 2, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
+            [{id: '3_0', hasMine: false, row: 3, col: 0, isFlagged: false, isCleared: true,  adjacentCells: []},
+             {id: '3_1', hasMine: false, row: 3, col: 1, isFlagged: false, isCleared: true,  adjacentCells: []},
+             {id: '3_2', hasMine: false, row: 3, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '3_3', hasMine: false, row: 3, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},]
+        ])
+        const actualField = adjacentCellsClearer(startingField[3][0], startingField)
+        expect(actualField).toEqual(expectedField)
+    })
+    it('should do nothing when a user attempts to clear adjacent cells but the adjacent flagged cell count does not match the adjacent mine count', () => {
+        const startingField = setAdjacentFields([
+            [{id: '0_0', hasMine: false, row: 0, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '0_1', hasMine: false, row: 0, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '0_2', hasMine: false, row: 0, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '0_3', hasMine: false, row: 0, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
+            [{id: '1_0', hasMine: false, row: 1, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '1_1', hasMine: false, row: 1, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '1_2', hasMine: false, row: 1, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '1_3', hasMine: false, row: 1, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
+            [{id: '2_0', hasMine: false, row: 2, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '2_1', hasMine: true,  row: 2, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '2_2', hasMine: false, row: 2, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '2_3', hasMine: false, row: 2, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},],
+            [{id: '3_0', hasMine: false, row: 3, col: 0, isFlagged: false, isCleared: true,  adjacentCells: []},
+             {id: '3_1', hasMine: false, row: 3, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '3_2', hasMine: false, row: 3, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+             {id: '3_3', hasMine: false, row: 3, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},]
+        ])
+        const expectedField = startingField.copyMinefield()
+        const actualField = adjacentCellsClearer(startingField[3][0], startingField)
+        expect(actualField).toEqual(expectedField)
     })
 })

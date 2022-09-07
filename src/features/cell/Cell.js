@@ -9,9 +9,9 @@ import cellStyles from './Cell.module.css'
 
 import { 
     selectMineField,
-    updateAdjacentCells,
     updateCell,
-    clearCell
+    clearCell,
+    clearAdjacentCells
 } from "../minefield/minefieldSlice";
 
 export default function Cell({props}){
@@ -20,11 +20,13 @@ export default function Cell({props}){
     const [leftMouse, setLeftMouse] = useState(false)
     const [rightMouse, setRightMouse] = useState(false)
     const [adjMineCount, setAdjMineCount] = useState([])
+    const [cell, setCell] = useState({})
 
     let minefield = useSelector(selectMineField)
 
     useEffect(() => {
         setAdjMineCount(minefield[props.row][props.col].adjacentCells.filter((cell) => cell.hasMine).length)
+        setCell({...minefield[props.row][props.col]})
     }, [minefield])
 
     // Mouse Actions
@@ -37,6 +39,19 @@ export default function Cell({props}){
     }
 
     const mouseUp = (e) => {
+        if(leftMouse && rightMouse){
+            dispatch(clearAdjacentCells(props))
+        }
+        else if (leftMouse && !rightMouse){
+            if(!cell.isCleared && !cell.isFlagged){
+                dispatch(clearCell(props))
+            }
+        }
+        else if (!leftMouse && rightMouse){
+            if(!cell.isCleared){
+                dispatch(updateCell({row: cell.row, col: cell.col, updates:[{key: 'isFlagged', val: !cell.isFlagged}]}))
+            }
+        }
         if(e.button === 0){
             setLeftMouse(false)
         } else if (e.button === 2) {
@@ -44,28 +59,18 @@ export default function Cell({props}){
         }
     }
 
-    const cellCleared = (e) => {
-        dispatch(clearCell(props))
-    }
-
-    const flagCell = (e) => {
-        e.preventDefault()
-        let flagged = minefield[props.row][props.col].isFlagged
-        dispatch(updateCell({row: props.row, col: props.col, updates:[{key: 'isFlagged', val: !flagged}]}))
-    }
-
     return (
-        <div className={`${cellStyles.square}`}>
+        <div className={`${cellStyles.square}`} onContextMenu={(e) => {e.preventDefault()}} onMouseDown={mouseDown} onMouseUp={mouseUp}>
             {minefield[props.row][props.col].isCleared && <div className='uncovered'>
                 {props.hasMine ? 
-                    <Bomb  className={`${cellStyles.square}`}/> : <div>{adjMineCount}</div>
+                    <Bomb className={`${cellStyles.square}`}/> : <div>{adjMineCount}</div>
                 }
             </div>}
             {!minefield[props.row][props.col].isCleared && !minefield[props.row][props.col].isFlagged && 
-                <BlankSquare className={`${cellStyles.square}`} key={props.id} onClick={cellCleared} onContextMenu={flagCell}/>
+                <BlankSquare className={`${cellStyles.square}`} key={props.id}/>
             }
             {!minefield[props.row][props.col].isCleared && minefield[props.row][props.col].isFlagged && 
-                <FlagSquare className={`${cellStyles.square}`} key={props.id} onContextMenu={flagCell}/>
+                <FlagSquare className={`${cellStyles.square}`} key={props.id}/>
             }
         </div>
     )

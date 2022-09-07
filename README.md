@@ -5,8 +5,7 @@ I want to build an app that users can use to play minesweeper.
     - Button to reset game
     - Timer showing how long the current game has been running
     - Remaining mines (Total Mine Count - Flagged Cells)
-    - Left + right mouse clicks clearing adjacent cells
-    - Disable right click on cleared cells
+    - Better styling
     When this list is complete, I'll try to host this on AWS
 I want to have a hover-over feature for cleared cells that shows the odds for each surrounding, uncleared cell of that cell being a mine, and why.
 I want to have a hover-over feature for uncleared cells that shows the odds of that cell being a mine, and why.
