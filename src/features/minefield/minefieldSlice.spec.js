@@ -39,12 +39,11 @@ Array.prototype.copyMinefield = function() {
 
 describe('minefield reducer', () => {
     const initialState = {
-        minefield: []
+        minefield: [],
+        gameState: 'Waiting'
     };
     it('should handle initial state', () => {
-        expect(minefieldReducer(undefined, {type: 'unknown'})).toEqual({
-            minefield: []
-        })
+        expect(minefieldReducer(undefined, {type: 'unknown'})).toEqual(initialState)
     });
     it('should generate a minefield with 99 mines when args are empty', () => {
         const actual = minefieldReducer(initialState, generateMineField());

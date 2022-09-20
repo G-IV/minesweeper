@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     minefield: [],
+    gameState: 'Waiting'
 }
 
 export const minefieldSlice = createSlice({

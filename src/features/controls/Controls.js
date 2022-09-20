@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import controlsStyling from './Controls.module.css';
 import { generateMineField, selectMineField } from '../minefield/minefieldSlice';
 
+import Timer from "../timer/Timer";
+
 export default function Controls(){
     const dispatch = useDispatch()
 
@@ -32,7 +34,7 @@ export default function Controls(){
             <div className="gameReset">
                 <button onClick={resetGame}>Reset</button>
             </div>
-            <div className={controlsStyling.gameTimer}>000</div>
+            <Timer />
         </div>
     )
 }
