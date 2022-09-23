@@ -10,9 +10,12 @@ import cellStyles from './Cell.module.css'
 import { 
     selectMineField,
     updateCell,
-    clearCell,
     clearAdjacentCells
 } from "../minefield/minefieldSlice";
+
+import {
+    clearCell
+} from './cellSlice'
 
 export default function Cell({props}){
     let dispatch = useDispatch()

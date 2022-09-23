@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { clearCellAndSurroudingCells, getAdjacentCells } from '../../hooks/minefield'
 
 const initialState = {
     minefield: [],
@@ -15,13 +16,11 @@ export const minefieldSlice = createSlice({
             state.minefield = cellUpdater(action.payload, [...state.minefield])
         },
         updateAdjacentCells: (state, action) => {
-            const adjacent = adjacentCells(action.payload, [...state.minefield])
-            const cell = {
-                row: action.payload.row, 
-                col: action.payload.col,
-                updates: [{key: 'adjacentCells', val: adjacent}]
-            }
-            state.minefield = cellUpdater(cell, [...state.minefield])
+            state.minefield
+                .forEach(
+                    (row) => row.forEach(
+                        (cell) => cell.adjacentCells = getAdjacentCells(cell, state.minefield)
+            ))
         },
         clearCell: (state, action) => {
             state.minefield = cellClearer(action.payload, [...state.minefield])
@@ -111,7 +110,7 @@ export const cellClearer = (cell, mineField) => {
     mineField[cell.row][cell.col].isCleared = true
 
     // If the user uncovered a mine, show all the mines
-    if(mineField[cell.row][cell.col].hasMine){
+    if(cell.hasMine){
         mineField.forEach((row) => row.forEach((cell) => cell.isCleared = cell.hasMine ? true : cell.isCleared))
         return mineField
     }
