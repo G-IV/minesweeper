@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { clearCellAndSurroudingCells, getAdjacentCells } from '../../hooks/minefield'
+import { getAdjacentCells } from '../../hooks/minefield'
 
 const initialState = {
     minefield: [],

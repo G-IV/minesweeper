@@ -10,8 +10,13 @@ import cellStyles from './Cell.module.css'
 import { 
     selectMineField,
     updateCell,
-    clearAdjacentCells
+    clearAdjacentCells,
+    startNewGame,
 } from "../minefield/minefieldSlice";
+
+import {
+    isGameActive,
+} from '../../hooks/minefield'
 
 import {
     clearCell
@@ -30,7 +35,7 @@ export default function Cell({props}){
     useEffect(() => {
         setAdjMineCount(minefield[props.row][props.col].adjacentCells.filter((cell) => cell.hasMine).length)
         setCell({...minefield[props.row][props.col]})
-    }, [minefield])
+    }, [minefield, props])
 
     // Mouse Actions
     const mouseDown = (e) => {
@@ -47,7 +52,12 @@ export default function Cell({props}){
         }
         else if (leftMouse && !rightMouse){
             if(!cell.isCleared && !cell.isFlagged){
-                dispatch(clearCell(props))
+                if (isGameActive(minefield)) {
+                    dispatch(clearCell(props))
+                } else {
+                    dispatch(startNewGame(props))
+                }
+                
             }
         }
         else if (!leftMouse && rightMouse){
