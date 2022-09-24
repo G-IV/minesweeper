@@ -9,6 +9,8 @@ import {
 
 import timerStyling from './Timer.module.css'
 
+import Display from "../display/display";
+
 export default function Timer(){
     const dispatch = useDispatch()
 
@@ -55,7 +57,7 @@ export default function Timer(){
 
     return (
         <div className={timerStyling.timer}>
-            {seconds}
+            <Display props={{val: seconds, max: 3}} />
         </div>
     )
 }

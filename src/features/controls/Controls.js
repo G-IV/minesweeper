@@ -5,6 +5,7 @@ import controlsStyling from './Controls.module.css';
 import { generateMineField, selectMineField } from '../minefield/minefieldSlice';
 
 import Timer from "../timer/Timer";
+import Display from "../display/display";
 import { setTimerState } from "../timer/timerSlice";
 
 export default function Controls(){
@@ -32,7 +33,9 @@ export default function Controls(){
 
     return (
         <div className={controlsStyling.gameControls}>
-            <div className={controlsStyling.mineCount}>{mineCount - flagCount}</div>
+            <div className={controlsStyling.mineCount}>
+                <Display props={{val: mineCount - flagCount, max: 3}} />
+            </div>
             <div className="gameReset">
                 <button onClick={resetGame}>Reset</button>
             </div>
