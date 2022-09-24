@@ -1,3 +1,6 @@
+# Want to see main in action??
+Here is a link (I'm using AWS, I'm sure that is cheating) - https://main.d243ha0ct0jb3l.amplifyapp.com/
+
 # Minesweeper
 I want to build an app that users can use to play minesweeper.  
  - Game is playable, but you have to refresh the browser to reset the game.  So I'd call this the MVP
