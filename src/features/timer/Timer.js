@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectSeconds, setSeconds, incrementSeconds, selectTimerState } from "./timerSlice";
+import { 
+    selectSeconds, 
+    setSeconds, 
+    incrementSeconds, 
+    selectTimerState
+} from "./timerSlice";
 
+import timerStyling from './Timer.module.css'
 
 export default function Timer(){
     const dispatch = useDispatch()
@@ -48,7 +54,7 @@ export default function Timer(){
     }, [timerState])
 
     return (
-        <div className="timer">
+        <div className={timerStyling.timer}>
             {seconds}
         </div>
     )
