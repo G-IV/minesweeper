@@ -5,11 +5,11 @@ Here is a link (I'm using AWS, I'm sure that is cheating) - https://main.d243ha0
 I want to build an app that users can use to play minesweeper.  
  - Game is playable, but you have to refresh the browser to reset the game.  So I'd call this the MVP
  - ToDo
-    - Button to reset game
-    - Timer showing how long the current game has been running
-    - Remaining mines (Total Mine Count - Flagged Cells)
     - Better styling
-    When this list is complete, I'll try to host this on AWS
+    - Options
+      - Different styling (make the minefield larger)
+      - Customize the field size + mine count
+      - Right hand column to show rules/how-to/thoughts (maybe make it collapsible or some other option to hide it)
 I want to have a hover-over feature for cleared cells that shows the odds for each surrounding, uncleared cell of that cell being a mine, and why.
 I want to have a hover-over feature for uncleared cells that shows the odds of that cell being a mine, and why.
 I want to have an auto-solve feature.
