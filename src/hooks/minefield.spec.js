@@ -1,4 +1,4 @@
-import { generateMines, updateAdjacentCells } from '../features/minefield/minefieldSlice'
+import { generateMines } from '../features/minefield/minefieldSlice'
 import {
     copyMinefield,
     countMines,

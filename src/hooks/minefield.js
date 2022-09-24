@@ -75,24 +75,21 @@ export const allCellsCleared = (minefield) => {
 }
 
 export const exposeAllMines = (minefield) => {
-    let copiedField = copyMinefield(minefield)
-    copiedField.forEach((row) => row.forEach((cell) => cell.isCleared = cell.hasMine ? cell.hasMine : cell.isCleared))
-    return copiedField
+    minefield.forEach((row) => row.forEach((cell) => cell.isCleared = cell.hasMine ? cell.hasMine : cell.isCleared))
+    return minefield
 }
 
 export const flagAllMines = (minefield) => {
-    let copiedField = copyMinefield(minefield)
-    copiedField.forEach((row) => row.forEach((cell) => cell.isFlagged = cell.hasMine ? cell.hasMine : cell.isFlagged))
-    return copiedField
+    minefield.forEach((row) => row.forEach((cell) => cell.isFlagged = cell.hasMine ? cell.hasMine : cell.isFlagged))
+    return minefield
 }
 
 export const clearCellAndSurroudingCells = (cell, minefield) => {
-    let copiedField = copyMinefield(minefield)
-    copiedField[cell.row][cell.col].isCleared = true
+    minefield[cell.row][cell.col].isCleared = true
     if(countAdjacentMines(cell) === 0){
-        cell.adjacentCells.filter((adjCell) => !copiedField[adjCell.row][adjCell.col].isCleared).forEach((adjCell) => {
-            copiedField = clearCellAndSurroudingCells(copiedField[adjCell.row][adjCell.col], copiedField)
+        cell.adjacentCells.filter((adjCell) => !minefield[adjCell.row][adjCell.col].isCleared).forEach((adjCell) => {
+            minefield = clearCellAndSurroudingCells(minefield[adjCell.row][adjCell.col], minefield)
         })
     }
-    return copiedField
+    return minefield
 }
