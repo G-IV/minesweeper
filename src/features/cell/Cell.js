@@ -18,6 +18,7 @@ import {
 import {
     isGameActive,
 } from '../../hooks/minefield'
+import { setTimerState } from "../timer/timerSlice";
 
 export default function Cell({props}){
     let dispatch = useDispatch()
@@ -75,6 +76,7 @@ export default function Cell({props}){
                     {count: 99, rows: 16, columns: 30, cell: {row: props.row, col: props.col}}
                 ))
                 dispatch(clearCell(props))
+                dispatch(setTimerState('newGame'))
             }
         }
         else if (isRightClick() && isCellRightClickable()){

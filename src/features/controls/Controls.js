@@ -5,6 +5,7 @@ import controlsStyling from './Controls.module.css';
 import { generateMineField, selectMineField } from '../minefield/minefieldSlice';
 
 import Timer from "../timer/Timer";
+import { setTimerState } from "../timer/timerSlice";
 
 export default function Controls(){
     const dispatch = useDispatch()
@@ -26,6 +27,7 @@ export default function Controls(){
 
     const resetGame = () => {
         dispatch(generateMineField())
+        dispatch(setTimerState('clear'))
     }
 
     return (
