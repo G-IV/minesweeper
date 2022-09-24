@@ -4,3 +4,43 @@
     background-color: grey;
     border: 1px black solid;
 }
+
+.mineCount{
+    
+}
+
+.mineCount_0{
+    display: none;
+}
+
+.mineCount_1{
+    color: #0C00AA
+}
+
+.mineCount_2{
+    color: #015200
+}
+
+.mineCount_3{
+    color: #AB0200
+}
+
+.mineCount_4{
+    color: #020051
+}
+
+.mineCount_5{
+    color: #510000
+}
+
+.mineCount_6{
+    color: #005251
+}
+
+.mineCount_7{
+    color: #000000
+}
+
+.mineCount_8{
+    color: #525252
+}

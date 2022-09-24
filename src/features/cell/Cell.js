@@ -94,7 +94,10 @@ export default function Cell({props}){
         <div className={`${cellStyles.square}`} onContextMenu={(e) => {e.preventDefault()}} onMouseDown={mouseDown} onMouseUp={mouseUp}>
             {minefield[props.row][props.col].isCleared && <div className='uncovered'>
                 {props.hasMine ? 
-                    <Bomb className={`${cellStyles.square}`}/> : <div>{adjMineCount}</div>
+                    <Bomb className={`${cellStyles.square}`}/> : <div 
+                    className={`${cellStyles[`mineCount_${adjMineCount}`]} ${cellStyles['mineCount']}`}>
+                        {adjMineCount}
+                    </div>
                 }
             </div>}
             {!minefield[props.row][props.col].isCleared && !minefield[props.row][props.col].isFlagged && 
