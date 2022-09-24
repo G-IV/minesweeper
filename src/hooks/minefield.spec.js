@@ -6,6 +6,7 @@ import {
     countNonMinedCells,
     countFlaggedCells,
     countAdjacentMines,
+    countAdjacentFlags,
     isGameActive,
     getOffsetCoordinate,
     getOffsetValue,
@@ -99,6 +100,52 @@ describe('countFlaggedCells()', () => {
 })
 
 describe('countAdjacentMines()', () => {
+    let minefield = [
+        [
+            {id: '0_0', hasMine: false, row: 0, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '0_1', hasMine: false, row: 0, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '0_2', hasMine: true, row: 0, col: 2, isFlagged: true, isCleared: false, adjacentCells: []},
+            {id: '0_3', hasMine: false, row: 0, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '0_4', hasMine: false, row: 0, col: 4, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '0_5', hasMine: false, row: 0, col: 5, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '0_6', hasMine: true, row: 0, col: 6, isFlagged: false, isCleared: false, adjacentCells: []},
+        ],[
+            {id: '1_0', hasMine: true, row: 1, col: 0, isFlagged: true, isCleared: false, adjacentCells: []},
+            {id: '1_1', hasMine: false, row: 1, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '1_2', hasMine: false, row: 1, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '1_3', hasMine: false, row: 1, col: 3, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '1_4', hasMine: true, row: 1, col: 4, isFlagged: true, isCleared: false, adjacentCells: []},
+            {id: '1_5', hasMine: false, row: 1, col: 5, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '1_6', hasMine: false, row: 1, col: 6, isFlagged: false, isCleared: false, adjacentCells: []},
+        ],[
+            {id: '2_0', hasMine: true, row: 2, col: 0, isFlagged: true, isCleared: false, adjacentCells: []},
+            {id: '2_1', hasMine: false, row: 2, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '2_2', hasMine: false, row: 2, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '2_3', hasMine: true, row: 2, col: 3, isFlagged: true, isCleared: false, adjacentCells: []},
+            {id: '2_4', hasMine: false, row: 2, col: 4, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '2_5', hasMine: true, row: 2, col: 5, isFlagged: true, isCleared: false, adjacentCells: []},
+            {id: '2_6', hasMine: false, row: 2, col: 6, isFlagged: false, isCleared: false, adjacentCells: []},
+        ],[
+            {id: '3_0', hasMine: true, row: 3, col: 0, isFlagged: true, isCleared: false, adjacentCells: []},
+            {id: '3_1', hasMine: false, row: 3, col: 1, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '3_2', hasMine: false, row: 3, col: 2, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '3_3', hasMine: true, row: 3, col: 3, isFlagged: true, isCleared: false, adjacentCells: []},
+            {id: '3_4', hasMine: false, row: 3, col: 4, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '3_5', hasMine: false, row: 3, col: 5, isFlagged: false, isCleared: false, adjacentCells: []},
+            {id: '3_6', hasMine: true, row: 3, col: 6, isFlagged: true, isCleared: false, adjacentCells: []},
+        ]
+    ]
+    minefield.forEach((row, i, field) => row.forEach((cell) => {
+        cell.adjacentCells = getAdjacentCells(cell, field)
+    }))
+    it('should return the qty of adjacent flagged cells', () => {
+        const cell = minefield[0][1]
+        const adjacentFlagCount = countAdjacentFlags(cell, minefield)
+        expect(adjacentFlagCount).toEqual(2)
+    })
+})
+
+describe('countAdjacentFlags()', () => {
     let minefield = [
         [
             {id: '0_0', hasMine: false, row: 0, col: 0, isFlagged: false, isCleared: false, adjacentCells: []},

@@ -25,6 +25,10 @@ export const countAdjacentMines = (cell) => {
     return cell.adjacentCells.filter((adjCell) => adjCell.hasMine).length
 }
 
+export const countAdjacentFlags = (cell, minefield) => {
+    return cell.adjacentCells.map((adjCell) => minefield[adjCell.row][adjCell.col].isFlagged).filter((isFlagged) => isFlagged).length
+}
+
 export const isGameActive = (minefield) => {
     return minefield.flat().filter((cell) => cell.hasMine).length > 0
 }

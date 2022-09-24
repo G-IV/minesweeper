@@ -7,6 +7,6 @@ export const cellSlice = createSlice({
     reducers: {}
 })
 
-export const {clearCell} = cellSlice.actions
+export const {} = cellSlice.actions
 
 export default cellSlice.reducer;
