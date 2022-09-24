@@ -10,9 +10,14 @@ import cellStyles from './Cell.module.css'
 import { 
     selectMineField,
     updateCell,
+    clearAdjacentCells,
+    generateMineField,
     clearCell,
-    clearAdjacentCells
 } from "../minefield/minefieldSlice";
+
+import {
+    isGameActive,
+} from '../../hooks/minefield'
 
 export default function Cell({props}){
     let dispatch = useDispatch()
@@ -27,7 +32,7 @@ export default function Cell({props}){
     useEffect(() => {
         setAdjMineCount(minefield[props.row][props.col].adjacentCells.filter((cell) => cell.hasMine).length)
         setCell({...minefield[props.row][props.col]})
-    }, [minefield])
+    }, [minefield, props])
 
     // Mouse Actions
     const mouseDown = (e) => {
@@ -38,20 +43,44 @@ export default function Cell({props}){
         }
     }
 
+    const isDualClick = () => {
+        return leftMouse && rightMouse
+    }
+
+    const isLeftClick = () => {
+        return leftMouse && !rightMouse
+    }
+
+    const isRightClick = () => {
+        return !leftMouse && rightMouse
+    }
+
+    const isCellLeftClickable = () => {
+        return !cell.isCleared && !cell.isFlagged
+    }
+
+    const isCellRightClickable = () => {
+        return !cell.isCleared
+    }
+
     const mouseUp = (e) => {
-        if(leftMouse && rightMouse){
+        if(isDualClick()){
             dispatch(clearAdjacentCells(props))
         }
-        else if (leftMouse && !rightMouse){
-            if(!cell.isCleared && !cell.isFlagged){
+        else if (isLeftClick() && isCellLeftClickable()){
+            if (isGameActive(minefield)) {
+                dispatch(clearCell(props))
+            } else {
+                dispatch(generateMineField(
+                    {count: 99, rows: 16, columns: 30, cell: {row: props.row, col: props.col}}
+                ))
                 dispatch(clearCell(props))
             }
         }
-        else if (!leftMouse && rightMouse){
-            if(!cell.isCleared){
-                dispatch(updateCell({row: cell.row, col: cell.col, updates:[{key: 'isFlagged', val: !cell.isFlagged}]}))
-            }
+        else if (isRightClick() && isCellRightClickable()){
+            dispatch(updateCell({row: cell.row, col: cell.col, updates:[{key: 'isFlagged', val: !cell.isFlagged}]}))
         }
+
         if(e.button === 0){
             setLeftMouse(false)
         } else if (e.button === 2) {
