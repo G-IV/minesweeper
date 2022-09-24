@@ -1,15 +1,9 @@
+import { copyMinefield } from '../../hooks/minefield';
 import minefieldReducer, {
     generateMineField,
     generateMines,
-    cellUpdater,
-    getOffsetCoordinate,
-    getOffsetValue,
     adjacentCells,
-    updateAdjacentCells,
     updateCell,
-    cellClearer,
-    clearCell,
-    adjacentCellsClearer,
 } from './minefieldSlice';
 
 // Commonly used functions.
@@ -24,18 +18,15 @@ const setAdjacentFields = (minefield) => {
     minefield.forEach((row, rIndex) => {
         row.forEach((cell, cIndex) => {
             const adjCells = adjacentCells({row: rIndex, col: cIndex}, minefield)
-            // let thisCell = {...minefield[rIndex][cIndex]}
-            // thisCell.adjacentCells = adjCells
-            // minefield[thisCell.row][thisCell.col] = {...thisCell}
             minefield[rIndex][cIndex].adjacentCells = adjCells
         })
     })
     return minefield
 }
 
-Array.prototype.copyMinefield = function() {
-    return [...this.map((row) => [...row.map((cell) => {return {...cell}})])]
-}
+// Array.prototype.copyMinefield = function() {
+//     return [...this.map((row) => [...row.map((cell) => {return {...cell}})])]
+// }
 
 describe('minefield reducer', () => {
     const initialState = {
@@ -103,7 +94,7 @@ describe('helper functions', () => {
     })
     it('when clicking the first cell in a field with only 1 empty space, generateMines should return the clicked cell as the only cleared cell', () => {
         let actualField = generateMines({count: 3, rows: 2, columns: 2, cell: {row: 0, col: 0}})
-        let expectedField = actualField.copyMinefield()
+        let expectedField = copyMinefield(actualField)
         expectedField[0][0].hasMine = false
         expectedField[0][1].hasMine = true
         expectedField[1][0].hasMine = true

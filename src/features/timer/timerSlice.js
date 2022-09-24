@@ -23,7 +23,7 @@ export const timerSlice = createSlice({
 export const {
     setSeconds, 
     setTimerState, 
-    incrementSeconds,
+    incrementSeconds,e
 } = timerSlice.actions
 
 export const selectSeconds = (state) => state.timer.seconds
