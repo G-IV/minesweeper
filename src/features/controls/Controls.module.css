@@ -10,9 +10,5 @@
 .mineCount{
     padding-left: 20px;
     background-color: #7E7E7E;
-}
-
-.gameTimer{
-    padding-right: 20px;
-    background-color: #7E7E7E;
+    width: 75px;
 }
