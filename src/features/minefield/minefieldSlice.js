@@ -7,6 +7,7 @@ import {
 
 const initialState = {
     minefield: [],
+    gameState: 'Waiting'
 }
 
 export const minefieldSlice = createSlice({
