@@ -5,7 +5,6 @@ import displayStyles from './display.module.css'
 
 export default function Display({props}){
     const createDigit = () => {
-        console.log(JSON.stringify(props));
         return String(props.val).padStart(props.max,'0').split('')
     }
     return (

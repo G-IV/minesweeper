@@ -470,10 +470,9 @@ describe('exposeAllMines()', () => {
     it('should expose all mines by setting all armed cells\' prop iscleared to true', () => {
         const args = {count: 10, rows: 5, columns: 10, cell: {row:0, col: 0}}
         const newMinefield = generateMines(args)
-        const updatedMinefield = exposeAllMines(newMinefield)
-        const mineCount = countMines(newMinefield)
-        const clearedCount = countClearedCells(updatedMinefield)
-        expect(clearedCount).toEqual(mineCount)
+        const updatedMinefield = exposeAllMines(newMinefield[0][0], newMinefield)
+        const hasUnclearedMine = updatedMinefield.flat().filter((cell) => cell.hasMine && !cell.isCleared)
+        expect(hasUnclearedMine.length).toEqual(0)
     })
 })
 

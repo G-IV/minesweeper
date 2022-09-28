@@ -2,31 +2,14 @@ import { copyMinefield } from '../../hooks/minefield';
 import minefieldReducer, {
     generateMineField,
     generateMines,
-    adjacentCells,
     updateCell,
 } from './minefieldSlice';
 
-// Commonly used functions.
-const countMines = (minefield=[]) => {
-    let aField = [...minefield]
-    return [].concat(...aField).flat().filter((cell) => cell.hasMine).length
-}
+import { countMines } from '../../hooks/minefield';
+
 const mineFieldSize = (minefield) => {
     return [minefield.length, minefield[0].length]
 }
-const setAdjacentFields = (minefield) => {
-    minefield.forEach((row, rIndex) => {
-        row.forEach((cell, cIndex) => {
-            const adjCells = adjacentCells({row: rIndex, col: cIndex}, minefield)
-            minefield[rIndex][cIndex].adjacentCells = adjCells
-        })
-    })
-    return minefield
-}
-
-// Array.prototype.copyMinefield = function() {
-//     return [...this.map((row) => [...row.map((cell) => {return {...cell}})])]
-// }
 
 describe('minefield reducer', () => {
     const initialState = {

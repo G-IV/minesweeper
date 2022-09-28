@@ -5,6 +5,10 @@
     border: 1px black solid;
 }
 
+.triggeredMine{
+    background-color: red;
+}
+
 .mineCount{
     
 }

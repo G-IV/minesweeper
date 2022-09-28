@@ -29,6 +29,10 @@ export const countAdjacentFlags = (cell, minefield) => {
     return cell.adjacentCells.map((adjCell) => minefield[adjCell.row][adjCell.col].isFlagged).filter((isFlagged) => isFlagged).length
 }
 
+export const getCellIndex = (cell, minefield) => {
+    return cell.row * minefield[0].length + cell.col
+}
+
 export const isGameActive = (minefield) => {
     return minefield.flat().filter((cell) => cell.hasMine).length > 0
 }
@@ -74,8 +78,8 @@ export const allCellsCleared = (minefield) => {
     return clearedCellQty === nonMinedCellQty
 }
 
-export const exposeAllMines = (minefield) => {
-    minefield.forEach((row) => row.forEach((cell) => cell.isCleared = cell.hasMine ? cell.hasMine : cell.isCleared))
+export const exposeAllMines = (cell, minefield) => {
+    minefield.forEach((row) => row.forEach((c) => c.isCleared = c.hasMine ? c.hasMine : c.isCleared))
     return minefield
 }
 
@@ -89,6 +93,39 @@ export const clearCellAndSurroudingCells = (cell, minefield) => {
     if(countAdjacentMines(cell) === 0){
         cell.adjacentCells.filter((adjCell) => !minefield[adjCell.row][adjCell.col].isCleared).forEach((adjCell) => {
             minefield = clearCellAndSurroudingCells(minefield[adjCell.row][adjCell.col], minefield)
+        })
+    }
+    return minefield
+}
+
+export const adjCellMineAndFlagQtyMatch = (cell, minefield) => {
+    return false
+}
+
+export const adjCellsCorrectlyFlagged = (cell, minefield) => {
+    return false
+}
+
+export const showIncorrectlyFlaggedMine = (cell, minefield) => {
+    return minefield
+}
+
+export const showTriggeredMine = (cell, minefield) => {
+    return minefield
+}
+
+export const clearStrictlyAdjacentCells = (cell, minefield) => {
+    return minefield
+}
+
+export const clearAdjacentCells = (cell, minefield) => {
+    const adjacentMinesQty = cell.adjacentCells.filter((c) => minefield[c.row][c.col].hasMine).length
+    const adjacentFlagsQty = cell.adjacentCells.filter((c) => minefield[c.row][c.col].isFlagged).length
+    if(adjacentFlagsQty === adjacentMinesQty){
+        cell.adjacentCells.forEach((c) => {
+            if(!minefield[c.row][c.col].isFlagged){
+                clearCellAndSurroudingCells(minefield[c.row][c.col], minefield)
+            }
         })
     }
     return minefield

@@ -4,20 +4,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReactComponent as BlankSquare } from '../../assets/BlankSquare.svg'
 import { ReactComponent as FlagSquare } from '../../assets/FlagSquare.svg'
 import { ReactComponent as Bomb } from '../../assets/Bomb.svg'
+import { ReactComponent as FalseFlag } from '../../assets/FalseFlag.svg'
+import { ReactComponent as TriggeredBomb } from '../../assets/TriggeredBomb.svg'
 
 import cellStyles from './Cell.module.css'
 
 import { 
     selectMineField,
     updateCell,
-    clearAdjacentCells,
+    clearNearbyCells,
     generateMineField,
     clearCell,
+    exposeMines,
 } from "../minefield/minefieldSlice";
 
 import {
     isGameActive,
 } from '../../hooks/minefield'
+
 import { setTimerState } from "../timer/timerSlice";
 
 export default function Cell({props}){
@@ -26,14 +30,13 @@ export default function Cell({props}){
     const [leftMouse, setLeftMouse] = useState(false)
     const [rightMouse, setRightMouse] = useState(false)
     const [adjMineCount, setAdjMineCount] = useState([])
-    const [cell, setCell] = useState({})
+    const [mineTriggered, setMineTriggered] = useState(false)
 
     let minefield = useSelector(selectMineField)
 
     useEffect(() => {
-        setAdjMineCount(minefield[props.row][props.col].adjacentCells.filter((cell) => cell.hasMine).length)
-        setCell({...minefield[props.row][props.col]})
-    }, [minefield, props])
+        setAdjMineCount(props.adjacentCells.filter((cell) => cell.hasMine).length)
+    }, [props])
 
     // Mouse Actions
     const mouseDown = (e) => {
@@ -57,20 +60,30 @@ export default function Cell({props}){
     }
 
     const isCellLeftClickable = () => {
-        return !cell.isCleared && !cell.isFlagged
+        return !props.isCleared && !props.isFlagged
     }
 
     const isCellRightClickable = () => {
-        return !cell.isCleared
+        return !props.isCleared
     }
 
     const mouseUp = (e) => {
         if(isDualClick()){
-            dispatch(clearAdjacentCells(props))
+            // Does flag qty of adjacent cells === mine qty?
+                // If yes, do flags match mines
+                    // If no, expose mines + styling
+                    // If yes, clearNearbyCells
+            dispatch(clearNearbyCells(props))
         }
         else if (isLeftClick() && isCellLeftClickable()){
             if (isGameActive(minefield)) {
-                dispatch(clearCell(props))
+                if (props.hasMine) {
+                    setMineTriggered(true)
+                    dispatch(exposeMines(props))
+                    dispatch(setTimerState('stop'))
+                } else {
+                    dispatch(clearCell(props))
+                }
             } else {
                 dispatch(generateMineField(
                     {count: 99, rows: 16, columns: 30, cell: {row: props.row, col: props.col}}
@@ -80,7 +93,7 @@ export default function Cell({props}){
             }
         }
         else if (isRightClick() && isCellRightClickable()){
-            dispatch(updateCell({row: cell.row, col: cell.col, updates:[{key: 'isFlagged', val: !cell.isFlagged}]}))
+            dispatch(updateCell({row: props.row, col: props.col, updates:[{key: 'isFlagged', val: !props.isFlagged}]}))
         }
 
         if(e.button === 0){
@@ -90,12 +103,54 @@ export default function Cell({props}){
         }
     }
 
+    const showBlankCell = () => {
+        return !props.isCleared && !props.isFlagged
+    }
+
+    const showFlaggedCell = () => {
+        return !props.isCleared && props.isFlagged
+    }
+
+    const showTriggeredBomb = () => {
+        return props.isCleared && props.hasMine && props.wasTriggered
+    }
+
+    const showFalseFlag = () => {
+        return props.isCleared && !props.hasMine && props.isFlagged
+    }
+
+    const showBomb = () => {
+        return props.isCleared && props.hasMine && !props.wasTriggered && !props.hadFalseFlag
+    }
+
+    const showAdjacentCount = () => {
+        return props.isCleared && !props.hasMine
+    }
+
+    const getCellElement = () => {
+        if (showBlankCell()) {
+            return (<BlankSquare className={`${cellStyles.square}`} key={props.id}/>)
+        } else if(showFlaggedCell()) {
+            return (<FlagSquare className={`${cellStyles.square}`} key={props.id}/>)
+        } else if (showTriggeredBomb()){
+            return (<TriggeredBomb className={`${cellStyles.square}`} key={props.id}/>)
+        } else if (showFalseFlag()){
+            return (<FalseFlag className={`${cellStyles.square}`} key={props.id}/>)
+        } else if (showBomb()){
+            return (<Bomb className={`${cellStyles.square}`} key={props.id}/>)
+        } else if (showAdjacentCount()){
+            return ( <div className={`${cellStyles[`mineCount_${adjMineCount}`]} ${cellStyles['mineCount']}`}>{adjMineCount}</div>)
+        }
+    }
+
     return (
         <div className={`${cellStyles.square}`} onContextMenu={(e) => {e.preventDefault()}} onMouseDown={mouseDown} onMouseUp={mouseUp}>
-            {minefield[props.row][props.col].isCleared && <div className='uncovered'>
+            {
+                getCellElement()
+            }
+            {/* {minefield[props.row][props.col].isCleared && <div className='uncovered'>
                 {props.hasMine ? 
-                    <Bomb className={`${cellStyles.square}`}/> : <div 
-                    className={`${cellStyles[`mineCount_${adjMineCount}`]} ${cellStyles['mineCount']}`}>
+                    <Bomb className={`${cellStyles.square} ${mineTriggered ? `${cellStyles['triggeredMine']}` : ''}`}/> : <div className={`${cellStyles[`mineCount_${adjMineCount}`]} ${cellStyles['mineCount']}`}>
                         {adjMineCount}
                     </div>
                 }
@@ -105,7 +160,7 @@ export default function Cell({props}){
             }
             {!minefield[props.row][props.col].isCleared && minefield[props.row][props.col].isFlagged && 
                 <FlagSquare className={`${cellStyles.square}`} key={props.id}/>
-            }
+            } */}
         </div>
     )
 }
