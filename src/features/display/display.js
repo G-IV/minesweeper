@@ -10,9 +10,7 @@ export default function Display({props}){
     return (
         <div className={displayStyles.display}>
             {createDigit().map((digit, i) => {
-                return <div className="digit" key={`digitID_${i}`}>
-                    <Digit props={{val: digit}}/>
-                </div>
+                return <Digit props={{val: digit}} key={`digitID_${i}`}/>
             })}
         </div>
     )
