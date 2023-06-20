@@ -130,15 +130,20 @@ export default function Cell({props}){
     const getCellElement = () => {
         if (showBlankCell()) {
             return (<BlankSquare className={`${cellStyles.square}`} key={props.id}/>)
-        } else if(showFlaggedCell()) {
+        } 
+        if(showFlaggedCell()) {
             return (<FlagSquare className={`${cellStyles.square}`} key={props.id}/>)
-        } else if (showTriggeredBomb()){
+        } 
+        if (showTriggeredBomb()){
             return (<TriggeredBomb className={`${cellStyles.square}`} key={props.id}/>)
-        } else if (showFalseFlag()){
+        } 
+        if (showFalseFlag()){
             return (<FalseFlag className={`${cellStyles.square}`} key={props.id}/>)
-        } else if (showBomb()){
+        } 
+        if (showBomb()){
             return (<Bomb className={`${cellStyles.square}`} key={props.id}/>)
-        } else if (showAdjacentCount()){
+        } 
+        if (showAdjacentCount()){
             return ( <div className={`${cellStyles[`mineCount_${adjMineCount}`]} ${cellStyles['mineCount']}`}>{adjMineCount}</div>)
         }
     }

@@ -13,6 +13,7 @@ const setAdjacentCells = (minefield) => {
     ))
     return minefield
 }
+
 const defaultMinefield = [
     [
         {id: '0_0', hasMine: false, row: 0, col: 0, isFlagged: false, isCleared: false, wasTriggered: false, adjacentCells: []},
@@ -114,32 +115,4 @@ describe('<Cell />', () => {
         const svg = screen.getByText('FalseFlag.svg')
         expect(svg).toBeInTheDocument()
     })
-})
-
-describe('Cell events', () => {
-    let initialMinefield = {
-        gameState: '',
-        minefield: setAdjacentCells(defaultMinefield)
-    }, 
-    initialCell = {}, 
-    initialTimer = {
-        seconds: 0,
-        timerState: 'clear',
-    },
-    preloadedState = {}
-    describe('game is not in progress', () => {
-        beforeEach(() => {
-            preloadedState = {
-                minefield: initialMinefield,
-                cell: initialCell,
-                timer: initialTimer,
-            }
-        })
-        it('should dispatch generateMineField(), clearCell(), and setTimerState()', () => {
-            const cell = initialMinefield.minefield[0][0]
-            const {container, store} = renderWithProviders(<Cell props={{cell}} />, preloadedState)
-            // fireEvent()
-            console.log('here');
-        })
-    })
-})
+});
