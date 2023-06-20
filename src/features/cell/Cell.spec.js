@@ -69,50 +69,50 @@ describe('<Cell />', () => {
     })
     it('should show a covered, unflagged cell', () => {
         const cell = initialMinefield.minefield[0][0]
-        const {container} = renderWithProviders(<Cell props={cell}/>,preloadedState)
-        const svg = container.children[0].textContent
-        expect(svg).toEqual('BlankSquare.svg')
+        renderWithProviders(<Cell props={cell}/>, preloadedState)
+        const svg = screen.getByText('BlankSquare.svg')
+        expect(svg).toBeInTheDocument()
     })
     it('should show a covered, flagged cell', () => {
         const cell = initialMinefield.minefield[1][2]
         preloadedState.minefield.minefield[1][2].isFlagged = true
-        const {container} = renderWithProviders(<Cell props={cell}/>,preloadedState)
-        const svg = container.children[0].textContent
-        expect(svg).toEqual('FlagSquare.svg')
+        renderWithProviders(<Cell props={cell}/>, preloadedState)
+        const svg = screen.getByText('FlagSquare.svg')
+        expect(svg).toBeInTheDocument()
     })
     it('should show a cleared cell, with value 0', () => {
         const cell = initialMinefield.minefield[0][0]
         preloadedState.minefield.minefield[0][0].isCleared = true
-        const {container} = renderWithProviders(<Cell props={cell}/>,preloadedState)
-        const svg = container.children[0].textContent
-        expect(svg).toEqual('0')
+        renderWithProviders(<Cell props={cell}/>, preloadedState)
+        const svg = screen.getByText('0')
+        expect(svg).toBeInTheDocument()
     })
     it('should show a triggered mine', () => {
         const cell = initialMinefield.minefield[1][2]
         preloadedState.minefield.minefield[1][2].isCleared = true
         preloadedState.minefield.minefield[1][2].wasTriggered = true
         preloadedState.minefield.minefield[1][2].isFlagged = false
-        const {container} = renderWithProviders(<Cell props={cell}/>,preloadedState)
-        const svg = container.children[0].textContent
-        expect(svg).toEqual('TriggeredBomb.svg')
+        renderWithProviders(<Cell props={cell}/>, preloadedState)
+        const svg = screen.getByText('TriggeredBomb.svg')
+        expect(svg).toBeInTheDocument()
     })
     it('should show a non-triggered mine', () => {
         const cell = initialMinefield.minefield[1][2]
         preloadedState.minefield.minefield[1][2].isCleared = true
         preloadedState.minefield.minefield[1][2].wasTriggered = false
         preloadedState.minefield.minefield[1][2].isFlagged = true
-        const {container} = renderWithProviders(<Cell props={cell}/>,preloadedState)
-        const svg = container.children[0].textContent
-        expect(svg).toEqual('Bomb.svg')
+        renderWithProviders(<Cell props={cell}/>, preloadedState)
+        const svg = screen.getByText('Bomb.svg')
+        expect(svg).toBeInTheDocument()
     })
     it('should show a false flag square', () => {
         const cell = initialMinefield.minefield[0][0]
         preloadedState.minefield.minefield[0][0].isCleared = true
         preloadedState.minefield.minefield[0][0].wasTriggered = false
         preloadedState.minefield.minefield[0][0].isFlagged = true
-        const {container} = renderWithProviders(<Cell props={cell}/>,preloadedState)
-        const svg = container.children[0].textContent
-        expect(svg).toEqual('FalseFlag.svg')
+        renderWithProviders(<Cell props={cell}/>, preloadedState)
+        const svg = screen.getByText('FalseFlag.svg')
+        expect(svg).toBeInTheDocument()
     })
 })
 
