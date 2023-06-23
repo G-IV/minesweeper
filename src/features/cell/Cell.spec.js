@@ -1,11 +1,11 @@
 import React from "react";
-import { fireEvent, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from '../../utils/test-utils';
 
-import { renderWithProviders } from '../../utils/test-utils'
+import user from "@testing-library/user-event";
 
 import Cell from "./Cell";
-import { getAdjacentCells } from "../../hooks/minefield";
-
+import { copyMinefield, getAdjacentCells } from "../../hooks/minefield";
 const setAdjacentCells = (minefield) => {
     minefield.forEach(
         (row) => row.forEach(
@@ -51,11 +51,7 @@ const defaultMinefield = [
 ];
 
 describe('<Cell />', () => {
-    let initialMinefield = {
-        gameState: '',
-        minefield: setAdjacentCells(defaultMinefield)
-    }, 
-    initialCell = {}, 
+    let initialCell = {}, 
     initialTimer = {
         seconds: 0,
         timerState: 'clear',
@@ -63,56 +59,91 @@ describe('<Cell />', () => {
     preloadedState = {}
     beforeEach(() => {
         preloadedState = {
-            minefield: initialMinefield,
             cell: initialCell,
+            minefield: setAdjacentCells(copyMinefield(defaultMinefield)),
             timer: initialTimer,
         }
     })
     it('should show a covered, unflagged cell', () => {
-        const cell = initialMinefield.minefield[0][0]
+        const cell = preloadedState.minefield[0][0]
         renderWithProviders(<Cell props={cell}/>, preloadedState)
-        const svg = screen.getByText('BlankSquare.svg')
+        const svg = screen.queryByText('BlankSquare.svg')
         expect(svg).toBeInTheDocument()
     })
     it('should show a covered, flagged cell', () => {
-        const cell = initialMinefield.minefield[1][2]
-        preloadedState.minefield.minefield[1][2].isFlagged = true
+        const cell = preloadedState.minefield[1][2]
+        preloadedState.minefield[1][2].isFlagged = true
         renderWithProviders(<Cell props={cell}/>, preloadedState)
-        const svg = screen.getByText('FlagSquare.svg')
+        const svg = screen.queryByText('FlagSquare.svg')
         expect(svg).toBeInTheDocument()
     })
     it('should show a cleared cell, with value 0', () => {
-        const cell = initialMinefield.minefield[0][0]
-        preloadedState.minefield.minefield[0][0].isCleared = true
+        const cell = preloadedState.minefield[0][0]
+        preloadedState.minefield[0][0].isCleared = true
         renderWithProviders(<Cell props={cell}/>, preloadedState)
-        const svg = screen.getByText('0')
+        const svg = screen.queryByText('0')
         expect(svg).toBeInTheDocument()
     })
     it('should show a triggered mine', () => {
-        const cell = initialMinefield.minefield[1][2]
-        preloadedState.minefield.minefield[1][2].isCleared = true
-        preloadedState.minefield.minefield[1][2].wasTriggered = true
-        preloadedState.minefield.minefield[1][2].isFlagged = false
+        const cell = preloadedState.minefield[1][2]
+        preloadedState.minefield[1][2].isCleared = true
+        preloadedState.minefield[1][2].wasTriggered = true
+        preloadedState.minefield[1][2].isFlagged = false
         renderWithProviders(<Cell props={cell}/>, preloadedState)
-        const svg = screen.getByText('TriggeredBomb.svg')
+        const svg = screen.queryByText('TriggeredBomb.svg')
         expect(svg).toBeInTheDocument()
     })
     it('should show a non-triggered mine', () => {
-        const cell = initialMinefield.minefield[1][2]
-        preloadedState.minefield.minefield[1][2].isCleared = true
-        preloadedState.minefield.minefield[1][2].wasTriggered = false
-        preloadedState.minefield.minefield[1][2].isFlagged = true
+        const cell = preloadedState.minefield[1][2]
+        preloadedState.minefield[1][2].isCleared = true
+        preloadedState.minefield[1][2].wasTriggered = false
+        preloadedState.minefield[1][2].isFlagged = true
         renderWithProviders(<Cell props={cell}/>, preloadedState)
-        const svg = screen.getByText('Bomb.svg')
+        const svg = screen.queryByText('Bomb.svg')
         expect(svg).toBeInTheDocument()
     })
     it('should show a false flag square', () => {
-        const cell = initialMinefield.minefield[0][0]
-        preloadedState.minefield.minefield[0][0].isCleared = true
-        preloadedState.minefield.minefield[0][0].wasTriggered = false
-        preloadedState.minefield.minefield[0][0].isFlagged = true
+        const cell = preloadedState.minefield[0][0]
+        preloadedState.minefield[0][0].isCleared = true
+        preloadedState.minefield[0][0].wasTriggered = false
+        preloadedState.minefield[0][0].isFlagged = true
         renderWithProviders(<Cell props={cell}/>, preloadedState)
-        const svg = screen.getByText('FalseFlag.svg')
+        const svg = screen.queryByText('FalseFlag.svg')
         expect(svg).toBeInTheDocument()
     })
 });
+
+describe('Flagged cell', () => {
+    let initialCell = {}, 
+    initialTimer = {
+        seconds: 0,
+        timerState: 'clear',
+    },
+    preloadedState = {}
+    beforeEach(() => {
+        preloadedState = {
+            cell: initialCell,
+            minefield: setAdjacentCells(copyMinefield(defaultMinefield)),
+            timer: initialTimer,
+        }
+    })
+    it('Should register clicks', async () => {
+        user.setup()
+        const cell = preloadedState.minefield[1][2]
+
+        // Render the component
+        renderWithProviders(<Cell props={cell} />, preloadedState)
+
+        // Get the cell & details of the cell
+        const cellUnderTest = screen.getByRole('cell')
+
+        // Click the cell
+        await user.pointer({keys: '[MouseLeft]', target: cellUnderTest})
+
+        // Validate the cell has been clicked
+        const flaggedSvg = await screen.findByText('FlagSquare.svg')
+        expect(flaggedSvg).toBeInTheDocument()
+        // expect(cellUnderTest).toHaveTextContent('1')
+
+    })
+})

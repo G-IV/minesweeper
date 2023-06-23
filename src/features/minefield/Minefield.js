@@ -19,7 +19,7 @@ export default function Minefield(){
                 minefield.map((row) =>(
                     <div className={`${minefieldStyles.minefieldRow}`} key={`row_${row[0].row}`}>
                         {row.map((cell) => (
-                            <div className={`cell`} key={`${cell.id}`}><Cell props={cell}/></div>
+                            <Cell props={cell}  key={`${cell.id}`}/>
                         ))}
                     </div>
                 ))

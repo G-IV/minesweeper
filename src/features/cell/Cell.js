@@ -128,6 +128,7 @@ export default function Cell({props}){
     }
 
     const getCellElement = () => {
+        console.log('getCellElement', props.id);
         if (showBlankCell()) {
             return (<BlankSquare className={`${cellStyles.square}`} key={props.id}/>)
         } 
@@ -149,23 +150,14 @@ export default function Cell({props}){
     }
 
     return (
-        <div className={`${cellStyles.square}`} onContextMenu={(e) => {e.preventDefault()}} onMouseDown={mouseDown} onMouseUp={mouseUp}>
-            {
-                getCellElement()
-            }
-            {/* {minefield[props.row][props.col].isCleared && <div className='uncovered'>
-                {props.hasMine ? 
-                    <Bomb className={`${cellStyles.square} ${mineTriggered ? `${cellStyles['triggeredMine']}` : ''}`}/> : <div className={`${cellStyles[`mineCount_${adjMineCount}`]} ${cellStyles['mineCount']}`}>
-                        {adjMineCount}
-                    </div>
-                }
-            </div>}
-            {!minefield[props.row][props.col].isCleared && !minefield[props.row][props.col].isFlagged && 
-                <BlankSquare className={`${cellStyles.square}`} key={props.id}/>
-            }
-            {!minefield[props.row][props.col].isCleared && minefield[props.row][props.col].isFlagged && 
-                <FlagSquare className={`${cellStyles.square}`} key={props.id}/>
-            } */}
+        <div 
+            className={`${cellStyles.square} cell-${props.id}`}
+            role="cell"
+            onContextMenu={(e) => {e.preventDefault()}} 
+            onMouseDown={mouseDown}
+            onMouseUp={mouseUp}
+        >
+            { getCellElement() }
         </div>
     )
 }
